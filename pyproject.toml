@@ -9,7 +9,12 @@ packages = ["src/myref"]
 name = "myref"
 version = "2026.1.0"
 dependencies = [
-    "PySide6"
+    "PySide6",
+    "faiss-cpu",
+    "torch",
+    "transformers",
+    "numpy",
+    "optimum[onnxruntime]"
 ]
 requires-python = ">=3.10"
 authors = [

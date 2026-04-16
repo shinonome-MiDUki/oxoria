@@ -1,0 +1,44 @@
+import os
+import pickle
+from pathlib import Path
+
+import faiss
+
+from myref.search.langugae_processing_variables import LanguageProcessingVariables as LPVar
+
+class SearchBase():
+    def __init__(self):
+        self.data_path = Path(LPVar.DATA_DIR)
+        if not self.data_path.exists():
+            os.mkdir(self.data_path)
+        self.search_base_path = self.data_path / "search_base.pkl"
+
+    def get_base(self) -> list:
+        if self.search_base_path.exists():
+            with open(self.search_base_path, "rb") as f:
+                search_base = pickle.load(f)
+        else:
+            search_base = []
+        return search_base
+    
+    def set_base(self, new_search_base: list) -> None:
+        with open(self.search_base_path, "wb") as f:
+            pickle.dump(new_search_base, f)
+        return
+    
+class FaissIndexBase:
+    def __init__(self):
+        self.data_path = Path(LPVar.DATA_DIR)
+        if not self.data_path.exists():
+            os.mkdir(self.data_path)
+        self.faiss_index_path = self.data_path / "search_data.faiss"
+
+    def write_index(self, data: faiss.Index) -> None:
+        faiss.write_index(data, str(self.faiss_index_path))
+
+    def read_index(self) -> faiss.Index:
+        if self.faiss_index_path.exists():
+            index = faiss.read_index(str(self.faiss_index_path))
+        else:
+            index = faiss.IndexFlatL2(384)
+        return index
