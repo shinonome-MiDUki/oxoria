@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/myref"]
+
+[project]
+name = "myref"
+version = "2026.1.0"
+dependencies = [
+    "PySide6"
+]
+requires-python = ">=3.10"
+authors = [
+  {name = "shinonome-MiDUki", email = "shiinaayame3@gmail.com"}
+]
+maintainers = [
+  {name = "shinonome-MiDUki", email = "shiinaayame3@gmail.com"}
+]
+description = "Write Code Anywhere, Anytime, and move with Python."
+readme = "README.md"
+license = "Apache-2.0"
+keywords = ["myref", "reference", "python"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python"
+]
+
+[project.urls]
+Documentation = "https://github.com/shinonome-MiDUki/reference_tool"
+Repository = "https://github.com/shinonome-MiDUki/reference_tool.git"
+Changelog = "https://github.com/shinonome-MiDUki/reference_tool/changelog.txt"
+
+[project.scripts]
+myref = "myref.__main__:main"
