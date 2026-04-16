@@ -9,8 +9,8 @@ from PySide6.QtGui import (
     QColor, QPen
 )
 
-from myref.ui.canvas_area.resize_handle import ResizeHandle
-from myref.ui.ui_var import UI_Var
+from oxoria.ui.canvas_area.resize_handle import ResizeHandle
+from oxoria.ui.ui_var import UI_Var
 
 class ImageItem(QGraphicsPixmapItem):
 

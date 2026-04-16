@@ -4,7 +4,7 @@ from torch import Tensor
 import numpy as np
 import faiss
 
-from myref.search.langugae_processing_variables import LanguageProcessingVariables as LPVar
+from oxoria.search.langugae_processing_variables import LanguageProcessingVariables as LPVar
 
 class UseVector:
     def __init__(self):

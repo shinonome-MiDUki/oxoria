@@ -7,3 +7,6 @@ class UI_Var:
     SIDEBAR_MIN     = 100       # サイドパネルの最小幅 (px)  ← 0で「消せる」
     SIDEBAR_STANDBY = 50
     SIDEBAR_MAX     = 600     # サイドパネルの最大幅 (px)s
+
+class Config_Var:
+    DATA_DIR = "/Users/shiinaayame/Downloads/oxoria_client"

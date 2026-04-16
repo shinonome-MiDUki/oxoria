@@ -11,25 +11,19 @@ from PySide6.QtGui import (
     QPainter, QColor, QBrush, QPixmap, QPen
 )
 
-from myref.ui.canvas_area.graphics_item import ImageItem
-from myref.ui.ui_var import UI_Var
+from oxoria.ui.canvas_area.graphics_item import ImageItem
+from oxoria.ui.ui_var import UI_Var
 
 class MainCanvas(QGraphicsView):
-    """
-    ・中ボタン or Space+左ボタン でパン
-    ・Ctrl+ホイール でズーム
-    ・画像をシーンへドロップ可能（ファイル）
-    """
 
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        # シーン設定
+
         scene = QGraphicsScene(self)
         scene.setSceneRect(-UI_Var.CANVAS_RANGE, -UI_Var.CANVAS_RANGE, UI_Var.CANVAS_RANGE * 2, UI_Var.CANVAS_RANGE * 2)
         self.setScene(scene)
 
-        # ビュー設定
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         self.setDragMode(QGraphicsView.DragMode.RubberBandDrag)
@@ -41,24 +35,19 @@ class MainCanvas(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         UI_Var.CANVAS_HEIGHT = self.size().height()
         self.centerOn(0, 0)
-        self.scale(0.2, 0.2)  # 初期ズームアウト
+        self.scale(0.2, 0.2)  
 
-        # パン用の内部状態
         self.panning     = False
         self.pan_start   = QPoint()
 
     def drawBackground(self, painter, rect):
         super().drawBackground(painter, rect)
         
-        # 現在のトランスフォーム（拡大率）を取得
         transform = self.transform()
-        scale = transform.m11()  # X方向のスケール
+        scale = transform.m11()  
         
-        # グリッドの基本サイズ
         base_step = 100
         
-        # ズームレベルに応じてステップサイズを調整
-        # (例: 拡大するほどグリッドを細かく、縮小するほど粗くする)
         if scale > 2.0:
             step = base_step / 2
         elif scale < 0.5:
@@ -71,29 +60,24 @@ class MainCanvas(QGraphicsView):
         right = rect.right()
         bottom = rect.bottom()
 
-        # 描画開始位置をグリッドに合わせる（モジュロ演算）
         start_x = math.floor(left / step) * step
         start_y = math.floor(top / step) * step
 
-        # ペンの設定
         thin_pen = QPen(QColor(60, 60, 60), 1.0 / scale)
         thick_pen = QPen(QColor(80, 80, 80), 1.5 / scale)
 
-        # 垂直線の描画
         x = start_x
         while x < right:
             painter.setPen(thick_pen if int(x) % int(step * 5) == 0 else thin_pen)
             painter.drawLine(QLineF(x, top, x, bottom))
             x += step
 
-        # 水平線の描画
         y = start_y
         while y < bottom:
             painter.setPen(thick_pen if int(y) % int(step * 5) == 0 else thin_pen)
             painter.drawLine(QLineF(left, y, right, y))
             y += step
 
-    # ── パン（中ボタン or Space+左ボタン）──────
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
             self.panning   = True

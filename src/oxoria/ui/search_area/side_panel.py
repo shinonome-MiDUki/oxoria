@@ -8,7 +8,7 @@ from PySide6.QtGui import (
     QColor
 )
 
-from myref.ui.ui_var import UI_Var
+from oxoria.ui.ui_var import UI_Var
 
 class SidePanel(QWidget):
     """

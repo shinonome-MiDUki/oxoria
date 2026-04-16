@@ -1,14 +1,17 @@
 import sys
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout
+    QMainWindow, QWidget, QVBoxLayout, 
+    QMenu, QToolBar
 )
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction
 
-from myref.ui.canvas_area.canvas import MainCanvas
-from myref.ui.search_area.side_panel import SidePanel
-from myref.ui.ux_widgets.splitter import Splitter
-from myref.ui.ux_widgets.status_bar import HintBar
-from myref.ui.ui_var import UI_Var
+from oxoria.ui.canvas_area.canvas import MainCanvas
+from oxoria.ui.search_area.side_panel import SidePanel
+from oxoria.ui.ux_widgets.splitter import Splitter
+from oxoria.ui.ux_widgets.status_bar import HintBar
+from oxoria.ui.outline.menu_bar import MenuBar
+from oxoria.ui.ui_var import UI_Var
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -18,14 +21,15 @@ class MainWindow(QMainWindow):
         self.resize(1280, 800)
         self.setStyleSheet("background: #1E1E1E;")
 
-        # ── 中央ウィジェット ──────────────────
         central = QWidget()
         self.setCentralWidget(central)
         main_layout = QVBoxLayout(central)
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # ── スプリッター ──────────────────────
+        self.menu_bar = MenuBar(self)
+        self.menu_bar.build_menu()
+
         self.splitter = Splitter(Qt.Orientation.Horizontal)
 
         self.side_panel = SidePanel()
@@ -34,11 +38,9 @@ class MainWindow(QMainWindow):
         self.splitter.addWidget(self.side_panel)
         self.splitter.addWidget(self.canvas)
 
-        # 初期幅：サイドパネル 240px, キャンバス 残り
         self.splitter.setSizes([UI_Var.SIDEBAR_DEFAULT, 9999])
-        self.splitter.setCollapsible(0, True)   # サイドパネルは折り畳み可能
-        self.splitter.setCollapsible(1, False)  # キャンバスは折り畳み不可
+        self.splitter.setCollapsible(0, True)  
+        self.splitter.setCollapsible(1, False) 
 
-        # ── 組み立て ──────────────────────────
         main_layout.addWidget(self.splitter, stretch=1)
         main_layout.addWidget(HintBar())

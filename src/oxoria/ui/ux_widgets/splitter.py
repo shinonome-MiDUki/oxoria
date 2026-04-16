@@ -2,7 +2,6 @@ import sys
 from PySide6.QtWidgets import QSplitter
 
 class Splitter(QSplitter):
-    """デフォルトより太くて見やすいドラッグハンドル"""
 
     def __init__(self, orientation, parent=None):
         super().__init__(orientation, parent)

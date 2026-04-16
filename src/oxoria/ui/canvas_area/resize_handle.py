@@ -9,14 +9,13 @@ from PySide6.QtGui import (
     QColor, QPen, QBrush
 )
 
-from myref.ui.ui_var import UI_Var
+from oxoria.ui.ui_var import UI_Var
 
 class ResizeHandle(QGraphicsRectItem):
-    """親アイテム(ImageItem)の四隅に置かれるドラッグ可能なハンドル"""
 
     def __init__(self, corner, parent_item):
         super().__init__(-UI_Var.HANDLE_SIZE / 2, -UI_Var.HANDLE_SIZE / 2, UI_Var.HANDLE_SIZE, UI_Var.HANDLE_SIZE, parent_item)
-        self.corner      = corner        # "TL" | "TR" | "BL" | "BR"
+        self.corner      = corner        
         self.parent_item = parent_item
         self.dragging    = False
         self.drag_start  = QPointF()

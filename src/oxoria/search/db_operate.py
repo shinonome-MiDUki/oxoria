@@ -4,7 +4,7 @@ from pathlib import Path
 
 import faiss
 
-from myref.search.langugae_processing_variables import LanguageProcessingVariables as LPVar
+from oxoria.search.langugae_processing_variables import LanguageProcessingVariables as LPVar
 
 class SearchBase():
     def __init__(self):
