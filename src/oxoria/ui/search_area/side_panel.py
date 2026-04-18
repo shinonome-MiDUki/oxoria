@@ -1,14 +1,70 @@
 import sys
+import json
+from pathlib import Path
+
 from PySide6.QtWidgets import (
     QWidget,QVBoxLayout, QHBoxLayout, QLineEdit, 
     QTreeWidget, QTreeWidgetItem,QLabel, QPushButton
 )
-
 from PySide6.QtGui import (
-    QColor
+    QColor, QPixmap, QDrag
+)
+from PySide6.QtCore import (
+    Qt, QMimeData
 )
 
 from oxoria.ui.ui_var import UI_Var
+
+RESOURCES_INDEX_PATH = "/Users/shiinaayame/Downloads/oxoria_client/resources.json"
+
+class ResourceIcon(QWidget):
+    def __init__(self, 
+                 resource_name: str,
+                 memo_text: str,
+                 tags: list[str],
+                 img_path: str, 
+                 ) -> None:
+        super().__init__()
+        self.hlayout = QHBoxLayout(self)
+        self.hlayout.setContentsMargins(4, 4, 4, 4)
+        self.resource_name = resource_name
+        self.memo_text = memo_text
+        self.tags = tags
+        self.img_path = img_path
+        self._set_icon()
+
+    def _set_icon(self):
+        self.thumbnail = QLabel()
+        pixmap = QPixmap(self.img_path)
+        self.thumbnail.setPixmap(pixmap.scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.thumbnail.setFixedSize(48, 48)
+        self.hlayout.addWidget(self.thumbnail)
+
+        text_layout = QVBoxLayout()
+        self.title_label = QLabel(self.resource_name)
+        self.title_label.setStyleSheet("font-weight: bold; color: #ffffff; font-size: 12px;")
+        self.title_label.setWordWrap(True)
+        text_layout.addWidget(self.title_label)
+        self.memo_label = QLabel(self.memo_text)
+        self.memo_label.setStyleSheet("color: #ffffff; font-size: 11px;")
+        self.memo_label.setWordWrap(True)
+        text_layout.addWidget(self.memo_label)
+        tag_list = ", ".join([f"#{t}" for t in self.tags])
+        self.tag_label = QLabel(tag_list)
+        self.tag_label.setStyleSheet("color: #ffffff; font-size: 10px;")
+        self.tag_label.setWordWrap(True)
+        text_layout.addWidget(self.tag_label)
+        self.hlayout.addLayout(text_layout)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            drag = QDrag(self)
+            drag_mime_data = QMimeData()
+            drag_mime_data.setText(self.img_path)
+            drag_mime_data.setData("application/oxoria_resources", self.img_path.encode("utf-8"))
+            drag.setMimeData(drag_mime_data)
+            drag.setPixmap(self.thumbnail.pixmap())
+            drag.exec(Qt.CopyAction)
 
 class SidePanel(QWidget):
     """
@@ -36,7 +92,7 @@ class SidePanel(QWidget):
         tb_layout = QHBoxLayout(title_bar)
         tb_layout.setContentsMargins(12, 0, 8, 0)
 
-        title_label = QLabel("EXTENSIONS")
+        title_label = QLabel("My Resources")
         title_label.setObjectName("titleLabel")
 
         icon_btn = QPushButton("···")
@@ -55,7 +111,7 @@ class SidePanel(QWidget):
         sf_layout.setContentsMargins(8, 6, 8, 6)
 
         self.search_box = QLineEdit()
-        self.search_box.setPlaceholderText("Search Extensions in Marketplace")
+        self.search_box.setPlaceholderText("Search My Resources")
         self.search_box.setObjectName("searchBox")
         self.search_box.setClearButtonEnabled(True)
         self.search_box.textChanged.connect(self._on_search_changed)
@@ -78,7 +134,7 @@ class SidePanel(QWidget):
 
         # ── ツリービュー ──────────────────────
         self.tree = QTreeWidget()
-        self.tree.setObjectName("extTree")
+        self.tree.setObjectName("SearchTree")
         self.tree.setHeaderHidden(True)
         self.tree.setIndentation(16)
         self.tree.setRootIsDecorated(True)
@@ -92,48 +148,46 @@ class SidePanel(QWidget):
         root_layout.addWidget(self.tree, stretch=1)
 
     def _populate_tree(self):
-        """サンプルデータでツリーを埋める"""
-        groups = {
-            "INSTALLED (4)": [
-                ("🎨", "Prettier",         "v3.1.0",  "Prettier formatter"),
-                ("🔵", "Pylance",           "v2024.2", "Python language support"),
-                ("🟡", "ESLint",            "v2.4.4",  "JS linting"),
-                ("🟢", "GitLens",           "v14.9.1", "Git supercharged"),
-            ],
-            "POPULAR": [
-                ("🔴", "Docker",            "v1.29.0", "Container management"),
-                ("🟣", "Remote - SSH",      "v0.112",  "Open remote folders"),
-                ("⚪", "Live Share",        "v1.0.5",  "Real-time collaboration"),
-                ("🔷", "Jupyter",           "v2024.1", "Notebook support"),
-                ("🟠", "GitHub Copilot",    "v1.180",  "AI code completion"),
-            ],
-            "RECOMMENDED": [
-                ("🧩", "Path Intellisense", "v2.8.5",  "Filename autocomplete"),
-                ("📦", "Import Cost",       "v3.3.0",  "Show package size"),
-            ],
-        }
+        with open(RESOURCES_INDEX_PATH, "r") as f:
+            app_data = json.load(f)
 
-        for group_name, items in groups.items():
-            group_item = QTreeWidgetItem(self.tree)
-            group_item.setText(0, group_name)
-            group_item.setExpanded(True)
-            font = group_item.font(0)
-            font.setBold(True)
-            group_item.setFont(0, font)
-            group_item.setForeground(0, QColor("#9D9D9D"))
+        if "resources" in app_data:
+            resources_data = app_data["resources"]
 
-            for icon, name, version, desc in items:
-                child = QTreeWidgetItem(group_item)
-                child.setText(0, f"  {icon}  {name}  {version}")
-                child.setToolTip(0, desc)
-                child.setForeground(0, QColor("#CCCCCC"))
+        catagories = {}
+        for pointer in resources_data:
+            resource = resources_data[pointer]
+            img_path = resource.get("path", "")
+            name = resource.get("name", "Unnamed Resource")
+            memo = resource.get("memo", "")
+            tags = resource.get("tags", [])
+            category = resource.get("category", "Uncategorized")
+            if category not in catagories:
+                tree_item = QTreeWidgetItem(self.tree)
+                tree_item.setText(0, category)
+                tree_item.setExpanded(True)
+                font = tree_item.font(0)
+                font.setBold(True)
+                tree_item.setFont(0, font)
+                tree_item.setForeground(0, QColor("#9D9D9D"))
+                catagories[category] = tree_item
+            if img_path == "" or not Path(img_path).exists():
+                continue
+            resource_icon = ResourceIcon(resource_name=name, 
+                                memo_text=memo, 
+                                tags=tags, 
+                                img_path=img_path)
+            tree_item_to_append = catagories[category]
+            child_item = QTreeWidgetItem(tree_item_to_append)
+            self.tree.setItemWidget(child_item, 0, resource_icon)
+            child_item.setSizeHint(0, resource_icon.sizeHint())
 
     # ── イベント（空実装） ─────────────────────
     def _on_search_changed(self, text):
-        pass   # ← バックエンド側で実装
+        pass   
 
     def _on_item_clicked(self, item, column):
-        pass   # ← バックエンド側で実装
+        pass  
 
     # ── スタイルシート ─────────────────────────
     def _apply_style(self):
@@ -194,20 +248,20 @@ class SidePanel(QWidget):
                 background: #007ACC;
                 color: #FFFFFF;
             }
-            QTreeWidget#extTree {
+            QTreeWidget#SearchTree {
                 background: #252526;
                 color: #CCCCCC;
                 border: none;
                 font-size: 12px;
                 outline: none;
             }
-            QTreeWidget#extTree::item {
+            QTreeWidget#SearchTree::item {
                 padding: 3px 0;
             }
-            QTreeWidget#extTree::item:hover {
+            QTreeWidget#SearchTree::item:hover {
                 background: #2A2D2E;
             }
-            QTreeWidget#extTree::item:selected {
+            QTreeWidget#SearchTree::item:selected {
                 background: #094771;
             }
             QScrollBar:vertical {

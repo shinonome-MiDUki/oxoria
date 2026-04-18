@@ -15,9 +15,8 @@ from oxoria.ui.ui_var import UI_Var
 
 class MainWindow(QMainWindow):
     def __init__(self):
-        print("MainWindow: Initializing UI...")
         super().__init__()
-        self.setWindowTitle("Infinite Canvas — PySide6")
+        self.setWindowTitle("Oxoria 1.0")
         self.resize(1280, 800)
         self.setStyleSheet("background: #1E1E1E;")
 
@@ -33,7 +32,7 @@ class MainWindow(QMainWindow):
         self.splitter = Splitter(Qt.Orientation.Horizontal)
 
         self.side_panel = SidePanel()
-        self.canvas     = MainCanvas()
+        self.canvas = MainCanvas()
 
         self.splitter.addWidget(self.side_panel)
         self.splitter.addWidget(self.canvas)

@@ -46,8 +46,15 @@ class ImageHash:
                    ) -> bool:
         return my_hash in target_hash_set
     
+    def get_hash_set(self) -> set:
+        try:
+            with open(self.hash_set_path, "rb") as f:
+                hash_set = pickle.load(f)
+                return hash_set
+        except Exception as e:
+            return set()
+    
     def write_hash(self, 
-                   image_path: str,
                    hash_value: str, 
                    hash_set: set
                    ) -> None:

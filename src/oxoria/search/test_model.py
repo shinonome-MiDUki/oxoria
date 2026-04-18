@@ -5,7 +5,6 @@ import torch.nn.functional as F
 import faiss
 import numpy as np
 
-from oxoria.search.faiss_index import FaissIndex
 from oxoria.search.langugae_processing_variables import LanguageProcessingVariables as LPVar
 
 def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
@@ -71,7 +70,7 @@ dimension = normalized_embeddings_np.shape[1]
 
 # IndexFlatL2インデックスの初期化とデータ追加
 index_flat_l2 = faiss.IndexFlatL2(dimension)
-index_flat_l2.add(normalized_qembeddings_np)  # 正規化済みで追加
+index_flat_l2.add(normalized_embeddings_np)  # 正規化済みで追加
 print("Number of vectors in the IndexFlatL2:", index_flat_l2.ntotal)
 
 # 上位3つの近いベクトルを検索するための設定（k=3）

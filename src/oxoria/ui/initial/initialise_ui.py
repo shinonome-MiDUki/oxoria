@@ -15,7 +15,7 @@ class InitUI(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Initial Setup")
+        self.setWindowTitle("Oxoria 1.0 - Initialization")
         self.setFixedSize(600, 640)
 
         central_widget = QWidget()

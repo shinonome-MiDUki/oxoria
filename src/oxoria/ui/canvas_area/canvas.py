@@ -106,22 +106,31 @@ class MainCanvas(QGraphicsView):
             super().mouseReleaseEvent(event)
 
     def dragEnterEvent(self, event):
-        if event.mimeData().hasUrls():
+        if (event.mimeData().hasUrls() or 
+            event.mimeData().hasFormat("application/oxoria_resources")):
             event.acceptProposedAction()
 
     def dragMoveEvent(self, event):
-        if event.mimeData().hasUrls():
+        if (event.mimeData().hasUrls() or 
+            event.mimeData().hasFormat("application/oxoria_resources")):
             event.acceptProposedAction()
 
     def dropEvent(self, event):
-        print("Drop event:", event.mimeData().urls())
-        for url in event.mimeData().urls():
-            path = url.toLocalFile()
+        def handle_file_drop(path):
             pm = QPixmap(path)
             if not pm.isNull():
                 scene_pos = self.mapToScene(event.position().toPoint())
                 item = ImageItem(pm, scene_pos)
                 self.scene().addItem(item)
+        event_mime = event.mimeData()
+        if event_mime.hasUrls():
+            for url in event_mime.urls():
+                img_path = url.toLocalFile()
+                handle_file_drop(img_path)
+        elif event_mime.hasFormat("application/oxoria_resources"):
+            img_path_b = event_mime.data("application/oxoria_resources")
+            img_path = str(img_path_b, encoding="utf-8")
+            handle_file_drop(img_path)
         event.acceptProposedAction()
 
     def keyPressEvent(self, event):
