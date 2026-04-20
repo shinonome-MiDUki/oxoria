@@ -5,14 +5,14 @@ from pathlib import Path
 import numpy as np
 import faiss
 
-from oxoria.search.langugae_processing_variables import LanguageProcessingVariables as LPVar
+from oxoria.global_var import GBVar
 
 class SearchBase():
     def __init__(self):
-        self.data_path = Path(LPVar.DATA_DIR)
+        self.data_path = Path(GBVar.DATA_DIR)
         if not self.data_path.exists():
-            os.mkdir(self.data_path)
-        self.search_base_path = self.data_path / "search_base.pkl"
+            return
+        self.search_base_path = self.data_path / "language_model/search_base.pkl"
 
     def get_base(self) -> list:
         if self.search_base_path.exists():
@@ -31,10 +31,10 @@ class SearchBase():
     
 class FaissIndexBase:
     def __init__(self):
-        self.data_path = Path(LPVar.DATA_DIR)
+        self.data_path = Path(GBVar.DATA_DIR)
         if not self.data_path.exists():
-            os.mkdir(self.data_path)
-        self.faiss_index_path = self.data_path / "search_data.faiss"
+            return
+        self.faiss_index_path = self.data_path / "language_model/search_data.faiss"
 
     def write_index(self, 
                     data: faiss.Index

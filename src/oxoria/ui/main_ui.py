@@ -3,19 +3,21 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, 
     QMenu, QToolBar
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QAction
 
 from oxoria.ui.canvas_area.canvas import MainCanvas
-from oxoria.ui.search_area.side_panel import SidePanel
+from oxoria.ui.resources_lib.side_panel import SidePanel
 from oxoria.ui.ux_widgets.splitter import Splitter
 from oxoria.ui.ux_widgets.status_bar import HintBar
 from oxoria.ui.outline.menu_bar import MenuBar
 from oxoria.ui.ui_var import UI_Var
+from oxoria.global_var import GBVar
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        GBVar.DATA_DIR = str(QSettings("App", "oxoria").value("central_repo_dir"))
         self.setWindowTitle("Oxoria 1.0")
         self.resize(1280, 800)
         self.setStyleSheet("background: #1E1E1E;")

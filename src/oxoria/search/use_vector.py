@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from pathlib import Path
 
 import numpy as np
 import faiss
@@ -10,7 +11,8 @@ from oxoria.search.langugae_processing_variables import LanguageProcessingVariab
 
 class UseVector:
     def __init__(self):
-        self.model_dir = LPVar.MODEL_DIR
+        current_root = Path(__file__).resolve().parents[2]
+        self.model_dir = current_root / LPVar.MODEL_DIR
 
     def setup_model_and_tokenizer(self) -> None:
         if hasattr(self, "model") and hasattr(self, "tokenizer"):

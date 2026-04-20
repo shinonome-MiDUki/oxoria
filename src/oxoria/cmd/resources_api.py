@@ -6,13 +6,14 @@ from PySide6.QtCore import QSettings
 from oxoria.graphics.img.image_hash import ImageHash
 from oxoria.search.db_operate import SearchBase, FaissIndexBase
 from oxoria.search.use_vector import UseVector
+from oxoria.global_var import GBVar
 
 class ResourcesAPI:
     def __init__(self):
-        self.data_path = str(QSettings("App", "oxoria").value("central_repo_dir"))
+        self.data_path = str(GBVar.DATA_DIR)
         self.image_hash = ImageHash(hash_mode="dhash", 
                                     hash_size=8, 
-                                    hash_set_path=str(Path(self.data_path) / "image_hash_set.pkl"))
+                                    hash_set_path=str(Path(self.data_path) / "img_process/image_hash_set.pkl"))
 
     def check_exists(self, 
                      img_hash: str | None, 
@@ -37,7 +38,7 @@ class ResourcesAPI:
             return img_hash, False
         
     def get_resources_profile(self) -> dict:
-        resources_profile_path = Path(self.data_path) / "resources_profile.json"
+        resources_profile_path = Path(self.data_path) / "resources_lib/resources_profile.json"
         if resources_profile_path.exists(): 
             with open(resources_profile_path, "r", encoding="utf-8") as f:
                 current_profile = json.load(f)
@@ -67,7 +68,7 @@ class ResourcesAPI:
         if "path" not in profile:
             return False
         current_profile = self.get_resources_profile()
-        resources_profile_path = Path(self.data_path) / "resources_profile.json"
+        resources_profile_path = Path(self.data_path) / "resources_lib/resources_profile.json"
         if merge and pointer in current_profile:
             existing_profile = current_profile[pointer]
             existing_profile.update(profile)

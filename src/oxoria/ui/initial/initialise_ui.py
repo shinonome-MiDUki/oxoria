@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 from pathlib import Path
 
 from PySide6.QtWidgets import (
@@ -28,8 +29,8 @@ class InitUI(QMainWindow):
         self.image_label.setAlignment(Qt.AlignCenter)
         self.image_label.setStyleSheet("background-color: #2c3e50; color: white; font-size: 20px;")
         
-        current_dir = Path(__file__).resolve().parents[2]
-        img_path = current_dir / "_resources/assets/initial_image.jpg"
+        self.current_dir = Path(__file__).resolve().parents[2]
+        img_path = self.current_dir / "_resources/assets/initial_image.jpg"
         print(f"Loading image from: {img_path}")
         img = QPixmap(str(img_path))
         self.image_label.setPixmap(img.scaled(600, 345, Qt.KeepAspectRatioByExpanding))
@@ -40,6 +41,7 @@ class InitUI(QMainWindow):
         self.stack = QStackedWidget()
         main_layout.addWidget(self.stack)
         self.central_repo_dir = self.app_data_dir()  
+        self.folders_to_make = ["resources_lib", "config", "img_process", "language_model"]
 
         self.setup_page_1()
         self.setup_page_2()
@@ -100,12 +102,21 @@ class InitUI(QMainWindow):
             self.central_repo_dir = dir_path
             self.central_repo.setText(dir_path)
 
-    def launch_main_window(self):
+    def make_dirs(self):
         if not os.path.exists(self.central_repo_dir):
             os.makedirs(self.central_repo_dir)
+            for folder in self.folders_to_make:
+                os.mkdir(Path(self.central_repo_dir) / folder)
+        with open(self.current_dir / "_resources/init_config/editor_cofig.json", mode="r", encoding="utf-8") as f:
+            sample_config = json.load(f)
+        with open(Path(self.central_repo_dir) / "config/editor_config.json", mode="w", encoding="utf-8") as f:
+            json.dump(sample_config, f, ensure_ascii=False, indent=4)
         settings = QSettings("App", "oxoria")
         settings.setValue("central_repo_dir", self.central_repo_dir)
-        
+
+    def launch_main_window(self):
+        self.make_dirs()
+
         from oxoria.ui.main_ui import MainWindow
         self.main_window = MainWindow()
         self.main_window.show()

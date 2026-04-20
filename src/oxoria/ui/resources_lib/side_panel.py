@@ -189,7 +189,6 @@ class SidePanel(QWidget):
     def _on_item_clicked(self, item, column):
         pass  
 
-    # ── スタイルシート ─────────────────────────
     def _apply_style(self):
         self.setStyleSheet("""
             SidePanel {
@@ -249,7 +248,6 @@ class SidePanel(QWidget):
                 color: #FFFFFF;
             }
             QTreeWidget#SearchTree {
-                background: #252526;
                 color: #CCCCCC;
                 border: none;
                 font-size: 12px;
