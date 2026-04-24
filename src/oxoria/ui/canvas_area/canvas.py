@@ -117,38 +117,47 @@ class MainCanvas(QGraphicsView):
             event.mimeData().hasFormat("application/oxoria_resources")):
             event.acceptProposedAction()
 
-    def dropEvent(self, event):
-        def handle_file_drop(path):
-            resources_api = ResourcesAPI()
-            existance_status = resources_api.check_exists(img_hash=None,
-                                                          img_path=path,
-                                                          tolerance=0)
+    def handle_file_drop(self, 
+                         path: str, 
+                         event = None
+                         ) -> None:
+        resources_api = ResourcesAPI()
+        existance_status = resources_api.check_exists(img_hash=None,
+                                                        img_path=path,
+                                                        tolerance=0)
+        img_hash = existance_status[0]
+        if img_hash is None: 
+            return
+        if not existance_status[1]:
             img_hash = existance_status[0]
-            if img_hash is None: 
+            resources_register_dialog = RegisterResourcesDialog()
+            resources_register_dialog.draw_dialog(img_path=path, img_hash=img_hash)
+            register_status = resources_register_dialog.exec()
+            if register_status == QDialog.DialogCode.Rejected:
                 return
-            if not existance_status[1]:
-                img_hash = existance_status[0]
-                resources_register_dialog = RegisterResourcesDialog()
-                resources_register_dialog.draw_dialog(img_path=path, img_hash=img_hash)
-                register_status = resources_register_dialog.exec()
-                if register_status == QDialog.DialogCode.Rejected:
-                    return
-            else:
-                path = resources_api.pointer_to_path(existance_status[0])
-            pm = QPixmap(path)
-            if not pm.isNull():
-                scene_pos = self.mapToScene(event.position().toPoint())
-                item = ImageItem(pm, scene_pos)
-                self.scene().addItem(item)
+        else:
+            path = resources_api.pointer_to_path(existance_status[0])
+        if event is None:
+            return
+        pm = QPixmap(path)
+        if not pm.isNull():
+            scene_pos = self.mapToScene(event.position().toPoint())
+            item = ImageItem(pm, scene_pos)
+            item.original_path = path
+            self.scene().addItem(item)
+
+    def dropEvent(self, event):
         event_mime = event.mimeData()
         if event_mime.hasUrls():
             for url in event_mime.urls():
                 img_path = url.toLocalFile()
-                handle_file_drop(img_path)
+                self.handle_file_drop(img_path, event)
         elif event_mime.hasFormat("application/oxoria_resources"):
-            img_path_b = event_mime.data("application/oxoria_resources")
-            img_path = str(img_path_b, encoding="utf-8")
-            handle_file_drop(img_path)
+            img_pointer_b = event_mime.data("application/oxoria_resources")
+            img_pointer = str(img_pointer_b, encoding="utf-8")
+            resources_api = ResourcesAPI()
+            img_path = resources_api.pointer_to_path(img_pointer)
+            self.handle_file_drop(img_path, event)
         event.acceptProposedAction()
 
     def keyPressEvent(self, event):
@@ -168,4 +177,12 @@ class MainCanvas(QGraphicsView):
             elif event.key() == Qt.Key_0 and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
                 self.resetTransform()
                 self.centerOn(0, 0)
+            elif event.key() == Qt.Key_R:
+                print("Group selected items - To be implemented")
+                selected_items = self.scene().selectedItems()
+                if selected_items:
+                    img_path = selected_items[0].original_path
+                    print(f"Attempting to register resource from path: {img_path}")
+                    if img_path is not None:
+                        self.handle_file_drop(path=img_path)
         super().keyPressEvent(event)

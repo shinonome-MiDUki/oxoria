@@ -27,7 +27,6 @@ class RegisterResourcesDialog(QDialog):
         self.image_preview_label.setStyleSheet("background-color: #ecf0f1; color: #2c3e50; font-size: 20px;")
         img = QPixmap(self.img_path)
         self.image_preview_label.setPixmap(img.scaled(600, 345, Qt.KeepAspectRatioByExpanding))
-        self.image_preview_label.setFixedHeight(345)
         layout.addWidget(self.image_preview_label)
         
         input_fields_layout = QVBoxLayout()
@@ -74,18 +73,14 @@ class RegisterResourcesDialog(QDialog):
         
         self.resources_api = ResourcesAPI()
 
-    def register_and_open_resource(self):
-        self.register_resource()
-        self.exec()
-
-    def register_resource(self):
+    def register_resource(self) -> bool:
         input_name = str(self.name_input.text())
         if input_name in self.existing_name_set:
-            return
+            return False
         if str(self.name_input.text()).strip() == "":
             self.name_check_label.setText("Name cannot be empty")
             self.name_check_label.setStyleSheet("color: red;")
-            return
+            return False
         resource_profile = self.resources_api.make_resource_profile(img_path=str(self.img_path),
                                                                     name=str(self.name_input.text()),
                                                                     memo=str(self.memo_input.text()),
@@ -100,6 +95,12 @@ class RegisterResourcesDialog(QDialog):
                                profile=resource_profile)
         print("Resource registered:", resource_profile)
         self.accept()
+        return True
+    
+    def register_and_open_resource(self):
+        register_status = self.register_resource()
+        if register_status:
+            self.accept()
 
     def opt_out_register(self):
         print("Resource import without register:", self.img_path)
@@ -107,8 +108,9 @@ class RegisterResourcesDialog(QDialog):
 
     def register_without_open(self):
         print("Resource registered without opening:", self.img_path)
-        self.register_resource()
-        self.reject()
+        register_status = self.register_resource()
+        if register_status:
+            self.reject()
 
     def check_duplicate_name(self):
         input_name = str(self.name_input.text())

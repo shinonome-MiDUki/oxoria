@@ -61,6 +61,8 @@ class UseVector:
                       k: int = 5
                       ) -> tuple[np.ndarray, np.ndarray]:
         normalized_query_embeddings_np = self.create_normalized_embedding_np(query_text)
+        if k == -1:
+            k = base_index.ntotal
         D_l2, I_l2 = base_index.search(normalized_query_embeddings_np, k)
 
         return D_l2, I_l2
@@ -70,7 +72,7 @@ class UseVector:
                            base_index: faiss.Index, 
                            search_base: list[str],
                            k: int = 5
-                           ) :
+                           ) -> list[str]:
         I_l2 = self.search_vector(query_text=query_text,
                                   base_index=base_index,
                                   k=k)[1]
@@ -82,7 +84,7 @@ class UseVector:
     def get_distance_result(self,
                             query_text: list[str], 
                             base_index: faiss.Index, 
-                            k: int | None = None
+                            k: int | None = 5
                             ) -> list[float]:
         D_l2 = self.search_vector(query_text=query_text,
                                   base_index=base_index,
@@ -92,3 +94,23 @@ class UseVector:
             search_distance_results.append(D_l2[0][i])
             
         return search_distance_results
+    
+    def get_search_results_by_distance(self, 
+                                   query_text: list[str], 
+                                   base_index: faiss.Index, 
+                                   search_base: list[str],
+                                   cutoff: float = 0.6,
+                                   max_output: int = 5
+                                   ) -> list[tuple[str, float]]:
+        D_l2, I_l2 = self.search_vector(query_text=query_text,
+                                  base_index=base_index,
+                                  k=-1)
+        search_results_with_distance = []
+        counter = 0
+        for i in range(len(I_l2[0])):
+            if D_l2[0][i] <= cutoff:
+                search_results_with_distance.append(search_base[I_l2[0][i].item()])
+                counter += 1
+                if counter >= max_output:
+                    break
+        return search_results_with_distance

@@ -14,7 +14,6 @@ from PySide6.QtCore import (
 )
 
 from oxoria.ui.ui_var import UI_Var
-from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.search_api import SearchAPI
 
 class ResourceIcon(QWidget):
@@ -62,8 +61,8 @@ class ResourceIcon(QWidget):
         if event.button() == Qt.LeftButton:
             drag = QDrag(self)
             drag_mime_data = QMimeData()
-            drag_mime_data.setText(self.img_path)
-            drag_mime_data.setData("application/oxoria_resources", self.img_path.encode("utf-8"))
+            drag_mime_data.setText(self.pointer)
+            drag_mime_data.setData("application/oxoria_resources", self.pointer.encode("utf-8"))
             drag.setMimeData(drag_mime_data)
             drag.setPixmap(self.thumbnail.pixmap())
             drag.exec(Qt.CopyAction)
@@ -249,7 +248,6 @@ class SidePanel(QWidget):
                 else:
                     child_item.setHidden(True)
 
-    # ── イベント（空実装） ─────────────────────
     def _on_search_changed(self):
         kw = self.search_box.text().strip()
         if kw == "":

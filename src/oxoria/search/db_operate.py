@@ -9,7 +9,10 @@ from oxoria.global_var import GBVar
 
 class SearchBase():
     def __init__(self):
-        self.data_path = Path(GBVar.DATA_DIR)
+        self.data_path = GBVar.DATA_DIR
+        if self.data_path is None:
+            return
+        self.data_path = Path(self.data_path)
         if not self.data_path.exists():
             return
         self.search_base_path = self.data_path / "language_model/search_base.pkl"
@@ -31,7 +34,10 @@ class SearchBase():
     
 class FaissIndexBase:
     def __init__(self):
-        self.data_path = Path(GBVar.DATA_DIR)
+        self.data_path = GBVar.DATA_DIR
+        if self.data_path is None:
+            return
+        self.data_path = Path(self.data_path)
         if not self.data_path.exists():
             return
         self.faiss_index_path = self.data_path / "language_model/search_data.faiss"

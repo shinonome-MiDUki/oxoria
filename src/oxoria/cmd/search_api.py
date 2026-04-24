@@ -29,10 +29,15 @@ class SearchAPI:
         idx = self.faiss_index_base.read_index()
         if len(search_base) < return_num:
             return_num = len(search_base)
-        result = self.use_vector.get_search_results(query_text=searching_kw,
-                                                    base_index=idx,
-                                                    search_base=search_base,
-                                                    k=return_num)
+        result = self.use_vector.get_search_results_by_distance(query_text=searching_kw,
+                                                                base_index=idx,
+                                                                search_base=search_base,
+                                                                cutoff=0.65,
+                                                                max_output=return_num)
+        # result = self.use_vector.get_search_results(query_text=searching_kw,
+        #                                             base_index=idx,
+        #                                             search_base=search_base,
+        #                                             k=return_num)
         return result
     
     def semantic_search_kw_to_pointer(self,

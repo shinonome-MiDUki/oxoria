@@ -7,8 +7,6 @@ from pathlib import Path
 from PySide6.QtCore import QSettings
 
 from oxoria.graphics.img.image_hash import ImageHash
-from oxoria.search.db_operate import SearchBase, FaissIndexBase
-from oxoria.search.use_vector import UseVector
 from oxoria.global_var import GBVar
 
 class ResourcesAPI:
