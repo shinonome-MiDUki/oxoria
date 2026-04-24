@@ -80,7 +80,6 @@ class SidePanel(QWidget):
         self.resources_index_path = Path(QSettings("App", "oxoria").value("central_repo_dir")) / "resources_lib/resources_profile.json"
         self.setMinimumWidth(UI_Var.SIDEBAR_MIN)
         self.setMaximumWidth(UI_Var.SIDEBAR_MAX)
-        self.suitable_pointer_list = []
         self._build_ui()
         self._apply_style()
 
@@ -217,8 +216,10 @@ class SidePanel(QWidget):
         self.tree.setItemWidget(child_item, 0, resource_icon)
         child_item.setSizeHint(0, resource_icon.sizeHint())
 
-    def _filter_tree(self):
-        if not self.suitable_pointer_list:
+    def _filter_tree(self,
+                     pointer_list: list[str] = None
+                     ) -> None:
+        if pointer_list is None:
             for i in range(self.tree.topLevelItemCount()):
                 catagory_item = self.tree.topLevelItem(i)
                 for j in range(catagory_item.childCount()):
@@ -230,7 +231,20 @@ class SidePanel(QWidget):
             for j in range(catagory_item.childCount()):
                 child_item = catagory_item.child(j)
                 resource_icon = self.tree.itemWidget(child_item, 0)
-                if resource_icon.pointer in self.suitable_pointer_list:
+                if resource_icon.pointer in pointer_list:
+                    child_item.setHidden(False)
+                else:
+                    child_item.setHidden(True)
+
+    def _search_item(self,
+                     target_pointer: str
+                     ) -> None:
+        for i in range(self.tree.topLevelItemCount()):
+            catagory_item = self.tree.topLevelItem(i)
+            for j in range(catagory_item.childCount()):
+                child_item = catagory_item.child(j)
+                resource_icon = self.tree.itemWidget(child_item, 0)
+                if resource_icon.pointer == target_pointer:
                     child_item.setHidden(False)
                 else:
                     child_item.setHidden(True)
@@ -239,13 +253,22 @@ class SidePanel(QWidget):
     def _on_search_changed(self):
         kw = self.search_box.text().strip()
         if kw == "":
-            self.suitable_pointer_list = []
             self._filter_tree()
             return
         search_api = SearchAPI()
-        self.suitable_pointer_list = search_api.semantic_search_kw_to_pointer(kw=self.search_box.text(), 
-                                                                              return_num=2)
-        self._filter_tree()
+        if kw.startswith("$"):
+            kw = kw[1:]
+            suitable_pointer_list = search_api.distance_search_kw(kw=self.search_box.text(),
+                                                                return_num=1,
+                                                                cutoff=0.5)
+            if suitable_pointer_list and suitable_pointer_list[0] is not None:
+                self._search_item(target_pointer=suitable_pointer_list[0])
+            else:
+                self._filter_tree()
+        else:
+            suitable_pointer_list = search_api.semantic_search_kw_to_pointer(kw=self.search_box.text(), 
+                                                                                return_num=2)
+            self._filter_tree(pointer_list=suitable_pointer_list)
 
     def _on_item_clicked(self, item, column):
         pass  

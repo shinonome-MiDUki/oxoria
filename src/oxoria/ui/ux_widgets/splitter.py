@@ -11,9 +11,9 @@ class Splitter(QSplitter):
                 background: #3C3C3C;
             }
             QSplitter::handle:hover {
-                background: #007ACC;
+                background: #007ACC;oco
             }
             QSplitter::handle:pressed {
                 background: #005F9E;
-            }
+            }ox
         """)

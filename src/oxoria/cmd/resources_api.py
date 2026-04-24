@@ -1,5 +1,7 @@
 import json
 import shutil
+import os
+import platform
 from pathlib import Path
 
 from PySide6.QtCore import QSettings
@@ -11,6 +13,8 @@ from oxoria.global_var import GBVar
 
 class ResourcesAPI:
     def __init__(self):
+        if platform.system() == "Darwin":
+            os.environ["OMP_NUM_THREADS"] = "1"
         self.data_path = str(GBVar.DATA_DIR)
         self.image_hash = ImageHash(hash_mode="dhash", 
                                     hash_size=8, 
