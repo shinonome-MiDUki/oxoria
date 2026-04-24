@@ -1,4 +1,5 @@
 import json
+import shutil
 from pathlib import Path
 
 from PySide6.QtCore import QSettings
@@ -14,6 +15,14 @@ class ResourcesAPI:
         self.image_hash = ImageHash(hash_mode="dhash", 
                                     hash_size=8, 
                                     hash_set_path=str(Path(self.data_path) / "img_process/image_hash_set.pkl"))
+        
+    def clone_resource_to_repo(self, 
+                               original_path: str,
+                               new_path: str,
+                               ) -> None:
+        if Path(new_path).exists():
+            return
+        shutil.copy2(original_path, new_path)
 
     def check_exists(self, 
                      img_hash: str | None, 
@@ -42,16 +51,25 @@ class ResourcesAPI:
         if resources_profile_path.exists(): 
             with open(resources_profile_path, "r", encoding="utf-8") as f:
                 current_profile = json.load(f)
-            return current_profile
+            return current_profile.get("resources", {})
         else:
             return {}
         
     def make_resource_profile(self,
                               img_path: str,
-                              name: str = "",
-                              memo: str = "",
-                              tags: list[str] = []
+                              name: str = None,
+                              memo: str = None,
+                              tags: list[str] = None,
+                              make_clone_path: bool = True
                               ) -> dict:
+        if tags is None:
+            tags = []
+        if make_clone_path:
+            img_path = Path(QSettings("App", "oxoria").value("central_repo_dir")) / "resources_lib" / Path(img_path).name
+        if name is None:
+            name = Path(img_path).stem
+        if memo is None:
+            memo = ""
         profile = {
             "path": img_path,
             "name": name,
@@ -83,7 +101,8 @@ class ResourcesAPI:
                         img_path: str | None,
                         profile: dict,
                         skip_existencce_check: bool = True,
-                        tolerance: float = 0
+                        tolerance: float = 0,
+                        make_clone: bool = True
                         ) -> bool:
         if img_hash is None:
             if img_path is not None:
@@ -104,6 +123,9 @@ class ResourcesAPI:
             return False
         self.image_hash.write_hash(hash_value=img_hash,
                              hash_set=hash_set)
+        if make_clone:
+            self.clone_resource_to_repo(original_path=img_path,
+                                       new_path=profile["path"])
         return True
 
     def pointer_to_path(self, 
@@ -185,3 +207,5 @@ class ResourcesAPI:
         self.write_resource_profile(pointer=pointer,
                                     profile={"tags": new_tags},
                                     merge=True)
+
+        

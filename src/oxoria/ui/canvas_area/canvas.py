@@ -12,6 +12,8 @@ from PySide6.QtGui import (
 )
 
 from oxoria.ui.canvas_area.graphics_item import ImageItem
+from oxoria.cmd.resources_api import ResourcesAPI
+from oxoria.ui.resources_lib.registering_dialog import RegisterResourcesDialog
 from oxoria.ui.ui_var import UI_Var
 
 class MainCanvas(QGraphicsView):
@@ -117,6 +119,19 @@ class MainCanvas(QGraphicsView):
 
     def dropEvent(self, event):
         def handle_file_drop(path):
+            resources_api = ResourcesAPI()
+            existance_status = resources_api.check_exists(img_hash=None,
+                                                          img_path=path,
+                                                          tolerance=0)
+            img_hash = existance_status[0]
+            if img_hash is None: 
+                return
+            if not existance_status[1]:
+                img_hash = existance_status[0]
+                resources_register_dialog = RegisterResourcesDialog(img_path=path, img_hash=img_hash)
+                resources_register_dialog.exec()
+            else:
+                path = resources_api.pointer_to_path(existance_status[0])
             pm = QPixmap(path)
             if not pm.isNull():
                 scene_pos = self.mapToScene(event.position().toPoint())

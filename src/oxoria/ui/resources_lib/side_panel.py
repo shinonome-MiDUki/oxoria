@@ -10,12 +10,11 @@ from PySide6.QtGui import (
     QColor, QPixmap, QDrag
 )
 from PySide6.QtCore import (
-    Qt, QMimeData
+    Qt, QMimeData, QSettings
 )
 
 from oxoria.ui.ui_var import UI_Var
 
-RESOURCES_INDEX_PATH = "/Users/shiinaayame/Downloads/oxoria_client/resources.json"
 
 class ResourceIcon(QWidget):
     def __init__(self, 
@@ -75,6 +74,7 @@ class SidePanel(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.resources_index_path = Path(QSettings("App", "oxoria").value("central_repo_dir")) / "resources_lib/resources.json"
         self.setMinimumWidth(UI_Var.SIDEBAR_MIN)
         self.setMaximumWidth(UI_Var.SIDEBAR_MAX)
         self._build_ui()
@@ -148,7 +148,7 @@ class SidePanel(QWidget):
         root_layout.addWidget(self.tree, stretch=1)
 
     def _populate_tree(self):
-        with open(RESOURCES_INDEX_PATH, "r") as f:
+        with open(self.resources_index_path, "r") as f:
             app_data = json.load(f)
 
         if "resources" in app_data:

@@ -103,14 +103,17 @@ class InitUI(QMainWindow):
             self.central_repo.setText(dir_path)
 
     def make_dirs(self):
-        if not os.path.exists(self.central_repo_dir):
-            os.makedirs(self.central_repo_dir)
-            for folder in self.folders_to_make:
-                os.mkdir(Path(self.central_repo_dir) / folder)
-        with open(self.current_dir / "_resources/init_config/editor_cofig.json", mode="r", encoding="utf-8") as f:
+        if not Path(self.central_repo_dir).exists():
+            Path(self.central_repo_dir).mkdir(parents=True, exist_ok=True)
+        for folder in self.folders_to_make:
+            sub_folder = Path(self.central_repo_dir) / folder
+            sub_folder.mkdir(parents=True, exist_ok=True)
+        with open(self.current_dir / "_resources/init_config/editor_config.json", mode="r", encoding="utf-8") as f:
             sample_config = json.load(f)
         with open(Path(self.central_repo_dir) / "config/editor_config.json", mode="w", encoding="utf-8") as f:
             json.dump(sample_config, f, ensure_ascii=False, indent=4)
+        with open(Path(self.central_repo_dir) / "resources_lib/resources.json", mode="w", encoding="utf-8") as f:
+            json.dump({"resources": {}}, f, ensure_ascii=False, indent=4)
         settings = QSettings("App", "oxoria")
         settings.setValue("central_repo_dir", self.central_repo_dir)
 
