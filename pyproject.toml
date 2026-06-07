@@ -20,7 +20,8 @@ dependencies = [
     "psutil",
     "setproctitle",
     "python-dotenv",
-    "pynput"
+    "pynput",
+    "opencv-python"
 ]
 requires-python = ">=3.10"
 authors = [

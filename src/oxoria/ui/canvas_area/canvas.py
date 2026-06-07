@@ -26,9 +26,9 @@ class MainCanvas(QGraphicsView):
         super().__init__(parent)
 
 
-        scene = QGraphicsScene(self)
-        scene.setSceneRect(-UI_Var.CANVAS_RANGE, -UI_Var.CANVAS_RANGE, UI_Var.CANVAS_RANGE * 2, UI_Var.CANVAS_RANGE * 2)
-        self.setScene(scene)
+        self.main_scene = QGraphicsScene(self)
+        self.main_scene.setSceneRect(-UI_Var.CANVAS_RANGE, -UI_Var.CANVAS_RANGE, UI_Var.CANVAS_RANGE * 2, UI_Var.CANVAS_RANGE * 2)
+        self.setScene(self.main_scene)
 
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
@@ -195,13 +195,7 @@ class MainCanvas(QGraphicsView):
             self.scale(factor, factor)
             UI_Var.CANVAS_HEIGHT = self.size().height()
         else:
-            if event.key() in (Qt.Key_Delete, Qt.Key_Backspace):
-                for item in self.scene().selectedItems():
-                    self.scene().removeItem(item)
-            elif event.key() == Qt.Key_0 and event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-                self.resetTransform()
-                self.centerOn(0, 0)
-            elif event.key() == Qt.Key_R:
+            if event.key() == Qt.Key_R:
                 print("Group selected items - To be implemented")
                 selected_items = self.scene().selectedItems()
                 if selected_items:

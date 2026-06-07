@@ -16,18 +16,9 @@ class ImageItem(QGraphicsPixmapItem):
 
     def __init__(self, pixmap, pos=QPointF(0, 0)):
         super().__init__(pixmap)
-        canvas_height = UI_Var.CANVAS_HEIGHT
-        minimise_ratio = 5.0
 
         self.base_pixmap = pixmap
-
-        scale_factor = (canvas_height * minimise_ratio) / float(pixmap.height())
-        scaled = self.base_pixmap.scaled(
-            int(float(pixmap.height()) * scale_factor), int(float(pixmap.width()) * scale_factor),
-            aspectMode = Qt.KeepAspectRatio,
-            mode = Qt.TransformationMode.SmoothTransformation
-        )
-        self.setPixmap(scaled)
+        self.setPixmap(self.__class__.scale_pixmap(self.base_pixmap))
         self.setScale(1.0)
         self.img_w = self.boundingRect().width()
         self.img_h = self.boundingRect().height()
@@ -51,6 +42,18 @@ class ImageItem(QGraphicsPixmapItem):
         self.pointer = None
 
         self._place_handles()
+    
+    @classmethod
+    def scale_pixmap(cls, pm):
+        canvas_height = UI_Var.CANVAS_HEIGHT
+        minimise_ratio = 5.0
+        scale_factor = (canvas_height * minimise_ratio) / float(pm.height())
+        scaled = pm.scaled(
+            int(float(pm.height()) * scale_factor), int(float(pm.width()) * scale_factor),
+            aspectMode = Qt.KeepAspectRatio,
+            mode = Qt.TransformationMode.SmoothTransformation
+        )
+        return scaled
 
     def _place_handles(self):
         w = self.img_w

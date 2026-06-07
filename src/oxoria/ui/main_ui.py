@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QAction
 
-from oxoria.ui.canvas_area.canvas import MainCanvas
+from oxoria.ui.canvas_area.ctx_menu import CanvasCtxMenu
 from oxoria.ui.resources_lib.side_panel import SidePanel
 from oxoria.ui.ux_widgets.splitter import Splitter
 from oxoria.ui.ux_widgets.status_bar import HintBar
@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         self.splitter = Splitter(Qt.Orientation.Horizontal)
 
         self.side_panel = SidePanel()
-        self.canvas = MainCanvas()
+        self.canvas = CanvasCtxMenu()
 
         self.splitter.addWidget(self.side_panel)
         self.splitter.addWidget(self.canvas)
