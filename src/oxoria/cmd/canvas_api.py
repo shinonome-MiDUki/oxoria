@@ -136,3 +136,17 @@ class CanvasAPI:
         shutil.make_archive(archive_path.with_suffix(""), format="zip", root_dir=temp_export_dir)
         os.rename(archive_path.with_suffix(".zip"), archive_path.with_suffix(".oxoarchive"))
         shutil.rmtree(temp_export_dir)
+
+    def delete_item(self,
+                    items_to_delete: list[ImageItem]
+                    ) -> None:
+        main_canvas = UI_Var.MAIN_CANVAS
+        if main_canvas is None: 
+            return
+        for item in items_to_delete:
+            main_canvas.scene().removeItem(item)
+        
+    def get_selected(self) -> list[ImageItem]:
+        main_canvas = UI_Var.MAIN_CANVAS
+        selected_items = main_canvas.scene().selectedItems()
+        return selected_items

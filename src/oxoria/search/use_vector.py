@@ -1,16 +1,13 @@
 from __future__ import annotations
 import os
-import shutil
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-from typing import TYPE_CHECKING
 from pathlib import Path
 
 import numpy as np
 import faiss
-if TYPE_CHECKING:
-    from torch import Tensor
-from transformers import AutoTokenizer
-from optimum.onnxruntime import ORTModelForFeatureExtraction
+from tokenizers import Tokenizer
+import onnxruntime
+import huggingface_hub
 
 from oxoria.global_var import GBVar
 
@@ -19,46 +16,47 @@ class UseVector:
         self.data_dir = GBVar.DATA_DIR
 
     def drop_model_and_tokenizer(self) -> None:
-        if hasattr(self, "model") and hasattr(self, "tokenizer"):
+        if hasattr(self, "onnx_session") and hasattr(self, "tokenizer"):
             return
         model_dir = Path(self.data_dir) / "language_model" / "model"
-        cache_dir = Path(self.data_dir) / "language_model" / "cache_model"
         model_config_path = model_dir / "config.json"
         if model_dir.exists() and model_config_path.exists():
             return
         model_dir.mkdir(parents=True, exist_ok=True)
-        cache_dir.mkdir(parents=True, exist_ok=True)
-        tmp_tokenizer = AutoTokenizer.from_pretrained(
-            "shinonome-MiDUki/paraphrase-multilingual-MiniLM-based-quantumized-model-forOXORIA",
-            cache_dir=str(cache_dir),
-            fix_mistral_regex=True)
-        tmp_model = ORTModelForFeatureExtraction.from_pretrained(
-            "shinonome-MiDUki/paraphrase-multilingual-MiniLM-based-quantumized-model-forOXORIA",
-            file_name="model_quantized.onnx",
-            cache_dir=str(cache_dir)
+        huggingface_hub.snapshot_download(
+            repo_id="shinonome-MiDUki/paraphrase-multilingual-MiniLM-based-quantumized-model-forOXORIA",
+            local_dir=model_dir
+        )
+        tokenizer_json_path = model_dir / "tokenizer.json"
+        self.tokenizer = Tokenizer.from_file(str(tokenizer_json_path))
+        self.tokenizer.enable_padding(direction="right", pad_id=0, pad_token="[PAD]")
+        self.tokenizer.enable_truncation(max_length=512)
+        onnx_model_path = model_dir / "model_quantized.onnx"
+        session_options = onnxruntime.SessionOptions()
+        self.onnx_session = onnxruntime.InferenceSession(
+            str(onnx_model_path),
+            sess_options=session_options,
+            providers=["CPUExecutionProvider"]
             )
-        tmp_tokenizer.save_pretrained(str(model_dir))
-        tmp_model.save_pretrained(str(model_dir))
-        self.tokenizer = tmp_tokenizer
-        self.model = tmp_model
-        shutil.rmtree(cache_dir)
 
     def setup_model_and_tokenizer(self) -> None:
-        if hasattr(self, "model") and hasattr(self, "tokenizer"):
+        if hasattr(self, "onnx_session") and hasattr(self, "tokenizer"):
             return
         model_dir = Path(self.data_dir) / "language_model" / "model"
         model_config_path = model_dir / "config.json"
         if not model_dir.exists() or not model_config_path.exists():
             self.drop_model_and_tokenizer()
             return
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            str(model_dir),
-            fix_mistral_regex=True,
-            local_files_only=True)
-        self.model = ORTModelForFeatureExtraction.from_pretrained(
-            str(model_dir),
-            file_name="model_quantized.onnx",
-            local_files_only=True
+        tokenizer_json_path = model_dir / "tokenizer.json"
+        self.tokenizer = Tokenizer.from_file(str(tokenizer_json_path))
+        self.tokenizer.enable_padding(direction="right", pad_id=0, pad_token="[PAD]")
+        self.tokenizer.enable_truncation(max_length=512)
+        onnx_model_path = model_dir / "model_quantized.onnx"
+        session_options = onnxruntime.SessionOptions()
+        self.onnx_session = onnxruntime.InferenceSession(
+            str(onnx_model_path),
+            sess_options=session_options,
+            providers=["CPUExecutionProvider"]
             )
         
     def average_pool(self, 
@@ -72,16 +70,22 @@ class UseVector:
                             input_texts: list[str]
                             ) -> np.ndarray:
         self.setup_model_and_tokenizer()
-        batch_dict = self.tokenizer(input_texts, 
-                                    max_length=512, 
-                                    padding=True, 
-                                    truncation=True,  
-                                    return_tensors='pt')
-        outputs = self.model(**batch_dict)
-
-        embeddings = self.average_pool(outputs.last_hidden_state, 
-                                       batch_dict['attention_mask'])
-        embeddings_np = embeddings.cpu().detach().numpy().astype(np.float32)
+        encoded_batch = self.tokenizer.encode_batch(input_texts)
+        input_ids = np.array([x.ids for x in encoded_batch], dtype=np.int64)
+        atten_mask = np.array([x.attention_mask for x in encoded_batch])
+        input_feed = {
+            "input_ids" : input_ids,
+            "attention_mask" : atten_mask
+        }
+        if "token_type_ids" in [y.name for y in self.onnx_session.get_inputs()]:
+            token_type_ids = np.array([x.type_ids for x in encoded_batch], dtype=np.int64)
+            input_feed["token_type_ids"] = token_type_ids
+        outputs = self.onnx_session.run(None, input_feed=input_feed)
+        hidden_state = outputs[0]
+        input_mask_expanded = np.expand_dims(atten_mask, axis=-1).astype(np.float32)
+        sum_embeddings = np.sum(hidden_state * input_mask_expanded, axis=1)
+        sum_mask = np.clip(input_mask_expanded.sum(axis=1), a_min=1e-9, a_max=None)
+        embeddings_np = (sum_embeddings / sum_mask).astype(np.float32)
         normalized_embeddings_np = embeddings_np / np.linalg.norm(embeddings_np, axis=1, keepdims=True)
         return normalized_embeddings_np
 

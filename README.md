@@ -38,7 +38,7 @@ Every UI action and internal operation maps to a Python function. Combine them f
 |---|---|
 | Language | Python 3.13 |
 | GUI | PySide6 |
-| ML / Search | `transformers`, `torch`, `faiss-cpu`, `optimum[onnxruntime]` |
+| ML / Search | `tokenizers`, `faiss-cpu`, `onnxruntime`, `huggingface-hub` |
 | Image Processing | `Pillow`, `ImageHash` |
 | Utilities | `numpy`, `psutil`, `setproctitle` |
 

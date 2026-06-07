@@ -7,15 +7,14 @@ packages = ["src/oxoria"]
 
 [project]
 name = "oxoria"
-version = "2026.1.2"
+version = "2026.1.3"
 dependencies = [
     "PySide6",
     "faiss-cpu",
-    "torch",
-    "transformers",
+    "tokenizers",
     "huggingface-hub",
     "numpy",
-    "optimum[onnxruntime]", 
+    "onnxruntime", 
     "pillow",
     "ImageHash",
     "psutil",
