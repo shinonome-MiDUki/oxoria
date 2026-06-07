@@ -150,3 +150,10 @@ class CanvasAPI:
         main_canvas = UI_Var.MAIN_CANVAS
         selected_items = main_canvas.scene().selectedItems()
         return selected_items
+    
+    def set_pixmap(self,
+                   pixmap: QPixmap,
+                   image_item: ImageItem
+                   ) -> None:
+        scaled_img = ImageItem.scale_pixmap(pixmap)
+        image_item.setPixmap(scaled_img)

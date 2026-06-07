@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QMenu
 
 from oxoria.ui.canvas_area.canvas import MainCanvas
 from oxoria.ui.canvas_area.graphics_item import ImageItem
-from oxoria.graphics.cv.cv_proccess import CvProcess as Cv
+from oxoria.cmd.std_cv_cmd import CvProcessAPI as CvAPI
 
 class CanvasCtxMenu(MainCanvas):
 
@@ -31,6 +31,8 @@ class CanvasCtxMenu(MainCanvas):
     def cv_submenu_ctx(self, submenu: QMenu):
         tobw_action = submenu.addAction("To Black-White")
         tobw_action.triggered.connect(lambda: self.cv_toblackwhite())
+        recovercolor_action = submenu.addAction("Recover Color")
+        recovercolor_action.triggered.connect(lambda: self.cv_recovercolor())
         denoise_action = submenu.addAction("Denoise")
         denoise_action.triggered.connect(lambda: self.cv_denoise())
 
@@ -44,15 +46,10 @@ class CanvasCtxMenu(MainCanvas):
         self.centerOn(0, 0)
 
     def cv_toblackwhite(self):
-        for item in self.scene().selectedItems():
-            pixmap = item.base_pixmap
-            bw_img = Cv.to_blackwhite(pixmap=pixmap)
-            scaled_bw_img = ImageItem.scale_pixmap(bw_img)
-            item.setPixmap(scaled_bw_img)
+        CvAPI.to_blackwhite()
+
+    def cv_recovercolor(self):
+        CvAPI.recover_color()
 
     def cv_denoise(self):
-        for item in self.scene().selectedItems():
-            pixmap = item.base_pixmap
-            bw_img = Cv.denoise_img(pixmap=pixmap)
-            scaled_bw_img = ImageItem.scale_pixmap(bw_img)
-            item.setPixmap(scaled_bw_img)
+        CvAPI.denoise_img()
