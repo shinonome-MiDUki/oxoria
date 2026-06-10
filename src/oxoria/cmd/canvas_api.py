@@ -127,7 +127,7 @@ class CanvasAPI:
                 if pointer not in canvas_file_dict:
                     del archiving_resources_profile[pointer]
                 else:
-                    img_path = current_resources_profile[pointer]["path"]
+                    img_path = resources_dir / current_resources_profile[pointer]["path"]
                     shutil.copy2(img_path, temp_image_dir)
         else:
             archiving_resources_profile = {}
@@ -151,9 +151,23 @@ class CanvasAPI:
         selected_items = main_canvas.scene().selectedItems()
         return selected_items
     
+    def group_selected(self) -> None:
+        main_canvas_scene = UI_Var.MAIN_CANVAS.scene()
+        main_canvas_scene.createItemGroup(main_canvas_scene.selectedItems())
+
+    def is_anything_selected(self) -> bool:
+        return True if self.get_selected() else False
+    
+    def set_to_origin(self) -> None:
+        main_canvas = UI_Var.MAIN_CANVAS
+        main_canvas.resetTransform()
+        main_canvas.centerOn(0, 0)
+        main_canvas.scale(0.15, 0.15) 
+    
     def set_pixmap(self,
                    pixmap: QPixmap,
                    image_item: ImageItem
                    ) -> None:
+        image_item.base_pixmap = pixmap
         scaled_img = ImageItem.scale_pixmap(pixmap)
         image_item.setPixmap(scaled_img)

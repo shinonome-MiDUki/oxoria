@@ -41,7 +41,7 @@ class MainCanvas(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         UI_Var.CANVAS_HEIGHT = self.size().height()
         self.centerOn(0, 0)
-        self.scale(0.2, 0.2)  
+        self.scale(0.15, 0.15)  
 
         self.panning     = False
         self.pan_start   = QPoint()
@@ -194,13 +194,4 @@ class MainCanvas(QGraphicsView):
                 factor = 0.90
             self.scale(factor, factor)
             UI_Var.CANVAS_HEIGHT = self.size().height()
-        else:
-            if event.key() == Qt.Key_R:
-                print("Group selected items - To be implemented")
-                selected_items = self.scene().selectedItems()
-                if selected_items:
-                    img_path = selected_items[0].original_path
-                    print(f"Attempting to register resource from path: {img_path}")
-                    if img_path is not None:
-                        self.handle_file_drop(path=img_path)
         super().keyPressEvent(event)

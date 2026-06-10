@@ -76,7 +76,8 @@ class SidePanel(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.resources_index_path = Path(QSettings("App", "oxoria").value("central_repo_dir")) / "resources_lib/resources_profile.json"
+        self.resource_lib_dir = Path(QSettings("App", "oxoria").value("central_repo_dir")) / "resources_lib"
+        self.resources_index_path = self.resource_lib_dir / "resources_profile.json"
         self.setMinimumWidth(UI_Var.SIDEBAR_MIN)
         self.setMaximumWidth(UI_Var.SIDEBAR_MAX)
         self._build_ui()
@@ -156,7 +157,7 @@ class SidePanel(QWidget):
         catagories = {}
         for pointer in resources_data:
             resource = resources_data[pointer]
-            img_path = resource.get("path", "")
+            img_path = str(self.resource_lib_dir / resource.get("path", ""))
             name = resource.get("name", "Unnamed Resource")
             memo = resource.get("memo", "")
             tags = resource.get("tags", [])

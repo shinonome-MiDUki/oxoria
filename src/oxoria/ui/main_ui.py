@@ -13,7 +13,7 @@ from PySide6.QtGui import QAction
 from oxoria.ui.canvas_area.ctx_menu import CanvasCtxMenu
 from oxoria.ui.resources_lib.side_panel import SidePanel
 from oxoria.ui.ux_widgets.splitter import Splitter
-from oxoria.ui.ux_widgets.status_bar import HintBar
+from oxoria.ui.ux_widgets.console_line import ConsoleLine
 from oxoria.ui.outline.menu_bar import MenuBar
 from oxoria.ui.ui_var import UI_Var
 from oxoria.global_var import GBVar
@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
         self.splitter.setCollapsible(1, False) 
 
         main_layout.addWidget(self.splitter, stretch=1)
-        main_layout.addWidget(HintBar())
+        main_layout.addWidget(ConsoleLine())
         UI_Var.MAIN_WINDOW = self
 
     def check_temp_registered_resource(self):

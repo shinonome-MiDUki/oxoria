@@ -15,10 +15,11 @@ class ResizeHandle(QGraphicsRectItem):
 
     def __init__(self, corner, parent_item):
         super().__init__(-UI_Var.HANDLE_SIZE / 2, -UI_Var.HANDLE_SIZE / 2, UI_Var.HANDLE_SIZE, UI_Var.HANDLE_SIZE, parent_item)
-        self.corner      = corner        
+        self.corner = corner        
         self.parent_item = parent_item
-        self.dragging    = False
-        self.drag_start  = QPointF()
+        self.dragging = False
+        self.drag_start = QPointF()
+        self.is_activated = False
 
         self.setBrush(QBrush(QColor("#4A90D9")))
         self.setPen(QPen(QColor("#FFFFFF"), 1.5))
@@ -26,6 +27,8 @@ class ResizeHandle(QGraphicsRectItem):
         self.setCursor(self._cursor_for(corner))
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIgnoresTransformations, False)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsFocusable, False)
+        self.setAcceptHoverEvents(True)
 
     def _cursor_for(self, corner):
         map = {
@@ -35,6 +38,15 @@ class ResizeHandle(QGraphicsRectItem):
             "BL": Qt.CursorShape.SizeBDiagCursor,
         }
         return map.get(corner, Qt.CursorShape.SizeAllCursor)
+    
+    def hoverEnterEvent(self, event):
+        self.is_activated = True
+        return super().hoverEnterEvent(event)
+    
+    def hoverLeaveEvent(self, event):
+        self.is_activated = False
+        self.parent_item.setFocus()
+        return super().hoverLeaveEvent(event)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:

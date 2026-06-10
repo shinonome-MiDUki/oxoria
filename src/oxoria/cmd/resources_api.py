@@ -27,6 +27,7 @@ class ResourcesAPI:
                                ) -> None:
         if Path(new_path).exists():
             return
+        new_path = Path(self.data_path) / "resources_lib" / new_path
         shutil.copy2(original_path, new_path)
 
     def check_exists(self, 
@@ -70,7 +71,7 @@ class ResourcesAPI:
         if tags is None:
             tags = []
         if make_clone_path:
-            img_path = Path(self.data_path) / "resources_lib" / Path(img_path).name
+            img_path = Path(img_path).name
         if name is None:
             name = Path(img_path).stem
         if memo is None:
@@ -142,11 +143,13 @@ class ResourcesAPI:
         current_profile = self.get_resources_profile()
         if pointer not in current_profile:
             return None
-        return current_profile[pointer].get("path", None)
+        rel_path = current_profile[pointer].get("path", None)
+        path = Path(self.data_path) / "resources_lib" / rel_path
+        return str(path)
 
-    def path_to_pointer(self, 
-                         path: str
-                         ) -> str | None:
+    def path_to_pointer(self,
+                        path: str
+                        ) -> str | None:
         current_profile = self.get_resources_profile()
         for pointer, profile in current_profile.items():
             if profile.get("path", None) == path:

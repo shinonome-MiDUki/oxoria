@@ -108,7 +108,6 @@ class CaptureImageTaskTray:
         self.msgq.put("CAPTURE")
 
     def capture_to_oxoria(self):
-        print("HelloWorld")
         resources_lib = Path(self.central_repo_dir) / "resources_lib"
         if not resources_lib.exists():
             resources_lib.mkdir(parents=True, exist_ok=True)

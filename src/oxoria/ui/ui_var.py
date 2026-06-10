@@ -1,5 +1,5 @@
 class UI_Var:
-    HANDLE_SIZE     = 80      # リサイズハンドルの一辺 (px)
+    HANDLE_SIZE     = 40      # リサイズハンドルの一辺 (px)
     MIN_ITEM_SIZE   = 40      # 画像アイテムの最小サイズ (px)
     CANVAS_RANGE    = 50000   # シーンの論理サイズ (±px)
     CANVAS_HEIGHT   = 800     # キャンバスの初期高さ (px)

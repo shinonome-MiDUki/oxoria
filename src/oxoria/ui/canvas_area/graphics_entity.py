@@ -1,4 +1,6 @@
 import sys
+from typing import TYPE_CHECKING
+
 from PySide6.QtWidgets import (
     QGraphicsPixmapItem, QGraphicsItem, 
 )
@@ -12,16 +14,15 @@ from PySide6.QtGui import (
 from oxoria.ui.canvas_area.resize_handle import ResizeHandle
 from oxoria.ui.ui_var import UI_Var
 
-class ImageItem(QGraphicsPixmapItem):
+if TYPE_CHECKING:
+    BaseClass = QGraphicsItem
+else:
+    BaseClass = object
 
-    def __init__(self, pixmap, pos=QPointF(0, 0)):
-        super().__init__(pixmap)
+class ImageItem(object):
 
-        self.base_pixmap = pixmap
-        self.setPixmap(self.__class__.scale_pixmap(self.base_pixmap))
-        self.setScale(1.0)
-        self.img_w = self.boundingRect().width()
-        self.img_h = self.boundingRect().height()
+    def __init__(self, pos=QPointF(0, 0)):
+        super().__init__()
 
         self.setPos(pos)
         self.setFlags(
@@ -43,18 +44,6 @@ class ImageItem(QGraphicsPixmapItem):
         self.setFlag(QGraphicsPixmapItem.GraphicsItemFlag.ItemIsFocusable, True)
 
         self._place_handles()
-    
-    @classmethod
-    def scale_pixmap(cls, pm):
-        canvas_height = UI_Var.CANVAS_HEIGHT
-        minimise_ratio = 5.0
-        scale_factor = (canvas_height * minimise_ratio) / float(pm.height())
-        scaled = pm.scaled(
-            int(float(pm.height()) * scale_factor), int(float(pm.width()) * scale_factor),
-            aspectMode = Qt.KeepAspectRatio,
-            mode = Qt.TransformationMode.SmoothTransformation
-        )
-        return scaled
 
     def _place_handles(self):
         w = self.img_w

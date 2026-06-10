@@ -12,6 +12,7 @@ from PySide6.QtGui import QAction
 
 from oxoria.global_var import GBVar
 from oxoria.cmd.std_menu_cmd import StdMenuCmd
+from oxoria.cmd.std_cv_cmd import CvProcessAPI
 from oxoria.cmd.canvas_api import CanvasAPI
 from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.search_api import SearchAPI
@@ -28,12 +29,14 @@ class MenuBar():
         if "menu_bar" not in self.config:
             return
         std_menu_cmd = StdMenuCmd()
+        std_cv_cmd = CvProcessAPI
         canvas_api = CanvasAPI()
         resources_api = ResourcesAPI()
         search_api = SearchAPI()
         app_api = AppAPI()
         api_set = {
             "std": std_menu_cmd,
+            "cv": std_cv_cmd,
             "canvas": canvas_api,
             "resources": resources_api,
             "search": search_api,
