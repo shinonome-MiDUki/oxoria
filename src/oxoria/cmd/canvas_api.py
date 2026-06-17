@@ -111,7 +111,7 @@ class CanvasAPI:
             archive_path = Path(archive_path)
         data_dir = Path(GBVar.DATA_DIR)
         temp_export_dir = data_dir / "temp_export"
-        resources_dir = data_dir / "resources_lib"
+        resources_dir = data_dir / GBVar.RESOURCES_DIR
         temp_export_dir.mkdir(parents=True, exist_ok=True)
         canvas_file_dict = self.make_oxoria_file()
         with open(temp_export_dir / "temp_canvas.oriana", "w", encoding="utf-8") as f:

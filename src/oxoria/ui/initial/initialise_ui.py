@@ -141,6 +141,8 @@ class InitUI(QMainWindow):
         if env_file:
             set_key(env_file, "OXORIA_CENTRAL_REPO_DIR", self.central_repo_dir)
         GBVar.DATA_DIR = self.central_repo_dir
+        settings.setValue("resources_lib", "resources_lib")
+        GBVar.RESOURCES_DIR = "resources_lib"
 
     def open_capture_monitor(self):
         situation = "true" if self.use_capture_checkbox.isChecked() else "false"
@@ -165,7 +167,7 @@ class InitUI(QMainWindow):
         self.make_dirs()
         self.open_capture_monitor()
         use_vector = UseVector()
-        #use_vector.drop_model_and_tokenizer()
+        use_vector.drop_model_and_tokenizer()
 
         from oxoria.ui.main_ui import MainWindow
         self.main_window = MainWindow()

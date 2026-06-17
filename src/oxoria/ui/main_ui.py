@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         UI_Var.MAIN_WINDOW = self
 
     def check_temp_registered_resource(self):
-        temp_resources_path = Path(QSettings("App", "oxoria").value("central_repo_dir")) / "resources_lib/temp_resources.json"
+        temp_resources_path = Path(QSettings("App", "oxoria").value("central_repo_dir")) / GBVar.RESOURCES_DIR / "temp_resources.json"
         if temp_resources_path.exists():
             resource_api = ResourcesAPI()
             with open(temp_resources_path, "r", encoding="utf-8") as f:
