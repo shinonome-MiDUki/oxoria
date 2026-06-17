@@ -68,7 +68,7 @@ class SearchAPI:
         for pointer, profile in profile.items():
             names.append(profile.get("name", None))
             pointers.append(pointer)
-        similar_names = difflib.get_close_matches(kw, names, n=return_num, cutoff=cutoff) 
+        similar_names = difflib.get_close_matches(kw, names, n=return_num, cutoff=0.5) 
         similar_pointers = []
         for name in names:
             if name in similar_names:
