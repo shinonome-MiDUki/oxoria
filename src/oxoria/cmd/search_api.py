@@ -22,7 +22,8 @@ class SearchAPI:
         
     def semantic_search_kw(self,
                   kw: str,
-                  return_num: int = 3
+                  return_num: int = 3,
+                  cutoff: float = 0.65
                   ) -> list[str]:
         searching_kw = [kw]
         search_base = self.search_base.get_base()
@@ -32,7 +33,7 @@ class SearchAPI:
         result = self.use_vector.get_search_results_by_distance(query_text=searching_kw,
                                                                 base_index=idx,
                                                                 search_base=search_base,
-                                                                cutoff=0.65,
+                                                                cutoff=cutoff,
                                                                 max_output=return_num)
         # result = self.use_vector.get_search_results(query_text=searching_kw,
         #                                             base_index=idx,
@@ -42,10 +43,12 @@ class SearchAPI:
     
     def semantic_search_kw_to_pointer(self,
                   kw: str,
-                  return_num: int = 3
+                  return_num: int = 3,
+                  cutoff: float = 0.65
                   ) -> list[str]:
-        result = self.semantic_search_kw(kw=kw, 
-                                return_num=return_num)
+        result = self.semantic_search_kw(kw=kw,
+                                         return_num=return_num,
+                                         cutoff=cutoff)
         pointer_list = [None for _ in range(return_num)]
         resources_api = ResourcesAPI()
         profile = resources_api.get_resources_profile()

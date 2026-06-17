@@ -1,0 +1,6 @@
+{
+    "semantic_search_length" : 2,
+    "semantic_search_cutoff" : 0.65,
+    "distance_search_lenght" : 1,
+    "distance_search_cutoff" : 0.5
+}

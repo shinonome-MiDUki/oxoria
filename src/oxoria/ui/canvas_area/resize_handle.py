@@ -9,12 +9,13 @@ from PySide6.QtGui import (
     QColor, QPen, QBrush
 )
 
-from oxoria.ui.ui_var import UI_Var
+from oxoria.cmd.config_api import EditorConfigAPI as Editor
 
 class ResizeHandle(QGraphicsRectItem):
 
     def __init__(self, corner, parent_item):
-        super().__init__(-UI_Var.HANDLE_SIZE / 2, -UI_Var.HANDLE_SIZE / 2, UI_Var.HANDLE_SIZE, UI_Var.HANDLE_SIZE, parent_item)
+        handle_size = Editor.handle_size
+        super().__init__(-handle_size / 2, -handle_size / 2, handle_size, handle_size, parent_item)
         self.corner = corner        
         self.parent_item = parent_item
         self.dragging = False
