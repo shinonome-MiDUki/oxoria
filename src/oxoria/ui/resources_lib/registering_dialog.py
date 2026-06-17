@@ -11,7 +11,6 @@ from PySide6.QtCore import Qt, QSettings
 from oxoria.ui.resources_lib.side_panel import SidePanel
 from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.search_api import SearchAPI
-from oxoria.global_var import GBVar
 
 class RegisterResourcesDialog(QDialog):
     def __init__(self):
@@ -60,7 +59,7 @@ class RegisterResourcesDialog(QDialog):
 
         self.setLayout(layout)
 
-        resources_dir = Path(QSettings("App", "oxoria").value("central_repo_dir", "")) / GBVar.RESOURCES_DIR
+        resources_dir = Path(QSettings("App", "oxoria").value("central_repo_dir", "")) / "resources_lib"
         with open(resources_dir / "resources_profile.json", mode="r", encoding="utf-8") as f:
             resources_dict = json.load(f)
         self.resources_dict = resources_dict

@@ -27,7 +27,7 @@ class ResourcesAPI:
                                ) -> None:
         if Path(new_path).exists():
             return
-        new_path = Path(self.data_path) / GBVar.RESOURCES_DIR / new_path
+        new_path = Path(self.data_path) / "resources_lib" / new_path
         shutil.copy2(original_path, new_path)
 
     def check_exists(self, 
@@ -53,7 +53,7 @@ class ResourcesAPI:
             return img_hash, False
         
     def get_resources_profile(self) -> dict:
-        resources_profile_path = Path(self.data_path) / "GBVar.RESOURCES_DIR/resources_profile.json"
+        resources_profile_path = Path(self.data_path) / "resources_lib/resources_profile.json"
         if resources_profile_path.exists(): 
             with open(resources_profile_path, "r", encoding="utf-8") as f:
                 current_profile = json.load(f)
@@ -92,7 +92,7 @@ class ResourcesAPI:
         if "path" not in profile:
             return False
         current_profile = self.get_resources_profile()
-        resources_profile_path = Path(self.data_path) / "GBVar.RESOURCES_DIR/resources_profile.json"
+        resources_profile_path = Path(self.data_path) / "resources_lib/resources_profile.json"
         if merge and pointer in current_profile:
             existing_profile = current_profile[pointer]
             existing_profile.update(profile)
@@ -144,7 +144,7 @@ class ResourcesAPI:
         if pointer not in current_profile:
             return None
         rel_path = current_profile[pointer].get("path", None)
-        path = Path(self.data_path) / GBVar.RESOURCES_DIR / rel_path
+        path = Path(self.data_path) / "resources_lib" / rel_path
         return str(path)
 
     def path_to_pointer(self,

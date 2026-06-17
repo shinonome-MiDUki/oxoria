@@ -14,7 +14,6 @@ from PySide6.QtCore import (
 )
 
 from oxoria.ui.ui_var import UI_Var
-from oxoria.global_var import GBVar
 from oxoria.cmd.search_api import SearchAPI
 
 class ResourceIcon(QWidget):
@@ -77,7 +76,7 @@ class SidePanel(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.resource_lib_dir = Path(QSettings("App", "oxoria").value("central_repo_dir")) / GBVar.RESOURCES_DIR
+        self.resource_lib_dir = Path(QSettings("App", "oxoria").value("central_repo_dir")) / "resources_lib"
         self.resources_index_path = self.resource_lib_dir / "resources_profile.json"
         self.setMinimumWidth(UI_Var.SIDEBAR_MIN)
         self.setMaximumWidth(UI_Var.SIDEBAR_MAX)

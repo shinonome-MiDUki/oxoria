@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import ttk
 import subprocess
 import os
 import time
@@ -30,15 +29,14 @@ class TkinterWindow:
 
     def _register_to_json(self,
                           name_txt: tk.Entry,
-                          memo_txt: tk.Entry,
-                          resources_lib_txt: tk.Entry
+                          memo_txt: tk.Entry
                           ) -> None:
         resource_name = name_txt.get().strip()
         resource_memo = memo_txt.get().strip()
         if self.central_repo_dir is None: 
             self.window.destroy()
             return
-        resources_lib = Path(self.central_repo_dir) / resources_lib_txt.get().strip()
+        resources_lib = Path(self.central_repo_dir) / "resources_lib"
         if not resources_lib.exists():
             resources_lib.mkdir(parents=True, exist_ok=True)
         temp_resources = resources_lib / "temp_resources.json"
@@ -74,40 +72,24 @@ class TkinterWindow:
         self.window.geometry("650x300")
         self.window.title("OXORIA Screen Capture Registration")
 
-        subdir_ls = [f.name for f in Path(self.central_repo_dir).iterdir() if f.is_dir()]
-        resources_lib_ls = ["resources_lib"] + [
-            d for d in subdir_ls 
-            if d not in ["resources_lib", "config", "img_process", "language_model", "temp_export"]
-            ]
-        combo = ttk.Combobox(
-            self.window,
-            values=resources_lib_ls,
-            state="readonly"
-            )
-        combo.current(0)
-        combo.pack(pady=10)
-        resources_lib_txt = tk.Entry(self.window,
-                                     width=50)
-        name_txt.place(x=130, y=30)
-
         tk.Label(self.window,
                  text="resource name").place(x=30, y=30)
         name_txt = tk.Entry(self.window,
                             width=50)
-        name_txt.place(x=130, y=65)
+        name_txt.place(x=130, y=30)
 
         tk.Label(self.window,
                  text="memo").place(x=30, y=65)
         memo_txt = tk.Entry(self.window,
                             width=50)
-        memo_txt.place(x=130, y=100)
+        memo_txt.place(x=130, y=65)
 
         tk.Button(self.window, 
                   text="Register", 
-                  command=lambda: self._register_to_json(name_txt, memo_txt)).place(x=30, y=135)
+                  command=lambda: self._register_to_json(name_txt, memo_txt)).place(x=30, y=100)
         tk.Button(self.window, 
                   text="Cancel", 
-                  command=lambda: self._cancel_register()).place(x=130, y=135)
+                  command=lambda: self._cancel_register()).place(x=130, y=100)
 
         self.window.mainloop()
 

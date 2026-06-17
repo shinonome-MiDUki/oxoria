@@ -39,7 +39,6 @@ def main():
     if check_first_run():
         win = InitUI()
     else:
-        GBVar.RESOURCES_DIR = QSettings("App", "oxoria").value("resources_lib", "resources_lib")
         if QSettings("App", "oxoria").value("use_capture_monitor", "true") == "true":
             app_api = AppAPI()
             app_api.run_capture_monitor()

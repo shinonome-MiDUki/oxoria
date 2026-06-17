@@ -30,5 +30,3 @@ class AppAPI:
         main_app = GBVar.MAIN_APP
         if main_app is not None:
             main_app.quit()
-
-    
