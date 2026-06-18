@@ -22,8 +22,8 @@ class ResizeHandle(QGraphicsRectItem):
         self.drag_start = QPointF()
         self.is_activated = False
 
-        self.setBrush(QBrush(QColor("#4A90D9")))
-        self.setPen(QPen(QColor("#FFFFFF"), 1.5))
+        self.setBrush(QBrush(QColor(Editor.handle_color)))
+        self.setPen(QPen(QColor(Editor.handle_outline_color), Editor.handle_outline_thickness))
         self.setZValue(10)
         self.setCursor(self._cursor_for(corner))
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)

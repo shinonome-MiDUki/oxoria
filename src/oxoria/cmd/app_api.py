@@ -4,6 +4,7 @@ import subprocess
 from pathlib import Path
 
 from oxoria.global_var import GBVar
+from oxoria.ui.ux_widgets.settings_dialog import SettingsDialog
 
 class AppAPI:
     def __init__(self):
@@ -26,7 +27,15 @@ class AppAPI:
             return  
         subprocess.Popen([sys.executable, str(entry_script)], start_new_session=True)
 
+    def open_settings(self) -> None:
+        settings_dialog = SettingsDialog()
+        settings_dialog.draw_dialog()
+        settings_dialog.exec()
+
     def quit_app(self) -> None:
         main_app = GBVar.MAIN_APP
         if main_app is not None:
             main_app.quit()
+
+
+    

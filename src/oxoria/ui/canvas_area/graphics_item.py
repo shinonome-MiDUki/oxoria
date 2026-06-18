@@ -125,6 +125,8 @@ class ImageItem(QGraphicsPixmapItem):
     def paint(self, painter, option, widget=None):
         super().paint(painter, option, widget)
         if self.isSelected():
-            pen = QPen(QColor("#4A90D9"), 2, Qt.PenStyle.DashLine)
+            pen = QPen(QColor(Editor.image_item_frame_color),
+                       Editor.image_item_frame_thickness, 
+                       Qt.PenStyle.DashLine)
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())

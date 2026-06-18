@@ -10,6 +10,7 @@ from oxoria.cmd.canvas_api import CanvasAPI
 from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.search_api import SearchAPI
 from oxoria.cmd.app_api import AppAPI
+from oxoria.cmd.config_api import EditorConfigAPI as Editor
 
 class ConsoleLine(QWidget):
     def __init__(self, parent=None):
@@ -21,11 +22,15 @@ class ConsoleLine(QWidget):
         layout.setSpacing(20)
 
         self.python_cmd_input = QLineEdit()
-        self.python_cmd_input.setStyleSheet("color: white; background-color: #303030;")
+        self.python_cmd_input.setStyleSheet(
+            f"color: {Editor.command_line_text_color}; background-color: {Editor.command_line_bg_color};"
+            )
         self.python_cmd_input.setPlaceholderText("Python command ...")
         layout.addWidget(self.python_cmd_input)
         python_exec_btn = QPushButton("exec")
-        python_exec_btn.setStyleSheet("color: white; background-color: #303030;")
+        python_exec_btn.setStyleSheet(
+            f"color: {Editor.command_line_text_color}; background-color: {Editor.command_line_bg_color};"
+            )
         layout.addWidget(python_exec_btn)
         python_exec_btn.clicked.connect(self.exec_oneline_python)
 

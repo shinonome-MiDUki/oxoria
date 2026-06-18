@@ -3,6 +3,8 @@ from PySide6.QtWidgets import QGraphicsTextItem, QGraphicsScene, QGraphicsView, 
 from PySide6.QtCore import Qt, QPointF, QRectF
 from PySide6.QtGui import QColor, QFont, QPen
 
+from oxoria.cmd.config_api import EditorConfigAPI as Editor
+
 class MemoItem(QGraphicsTextItem):
     def __init__(self, pos: QPointF = QPointF(0, 0), size: int = 1200):
         super().__init__()
@@ -11,12 +13,12 @@ class MemoItem(QGraphicsTextItem):
 
         self.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
 
-        font = QFont("Yu Gothic", 180)
+        font = QFont(Editor.memo_text_font, Editor.memo_text_font_size)
         self.setFont(font)
-        self.setDefaultTextColor(QColor("#333333")) 
+        self.setDefaultTextColor(QColor(Editor.memo_text_color)) 
         self.setPlainText("Memo ...")
 
-        self.margin = 20
+        self.margin = Editor.memo_text_margin
         self.setTextWidth(self.size - (self.margin * 2))
 
         self.setFlags(
@@ -31,7 +33,7 @@ class MemoItem(QGraphicsTextItem):
         return QRectF(0, 0, self.size, self.size)
 
     def paint(self, painter, option, widget):
-        painter.setBrush(QColor("#FFFDF0"))
+        painter.setBrush(QColor(Editor.memo_paper_color))
         
         rect = self.boundingRect()
         painter.drawRect(rect)

@@ -74,8 +74,8 @@ class MainCanvas(QGraphicsView):
         start_x = math.floor(left / step) * step
         start_y = math.floor(top / step) * step
 
-        thin_pen = QPen(QColor(Editor.ruled_line_thin_color), Editor.ruled_line_thickness[0] / scale)
-        thick_pen = QPen(QColor(Editor.ruled_line_thich_color), Editor.ruled_line_thickness[1] / scale)
+        thin_pen = QPen(QColor(Editor.ruled_line_thin_color), Editor.ruled_line_thin_thickness / scale)
+        thick_pen = QPen(QColor(Editor.ruled_line_thich_color), Editor.ruled_line_thick_thickness / scale)
 
         x = start_x
         while x < right:

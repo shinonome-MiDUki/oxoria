@@ -85,5 +85,8 @@ class StdMenuCmd:
     def force_quit_app(self) -> None:
         self.app_api.quit_app()
 
+    def open_settings(self) -> None:
+        self.app_api.open_settings()
+
     def test(self) -> None:
         print("Test command executed")

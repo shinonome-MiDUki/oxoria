@@ -259,7 +259,7 @@ class SidePanel(QWidget):
         if kw.startswith("$"):
             kw = kw[1:]
             suitable_pointer_list = search_api.distance_search_kw(kw=self.search_box.text(),
-                                                                return_num=Cfg.distance_search_lenght,
+                                                                return_num=Cfg.distance_search_length,
                                                                 cutoff=Cfg.distance_search_cutoff)
             if suitable_pointer_list and suitable_pointer_list[0] is not None:
                 self._search_item(target_pointer=suitable_pointer_list[0])

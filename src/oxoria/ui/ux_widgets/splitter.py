@@ -1,11 +1,13 @@
 import sys
 from PySide6.QtWidgets import QSplitter
 
+from oxoria.cmd.config_api import EditorConfigAPI as Editor
+
 class Splitter(QSplitter):
 
     def __init__(self, orientation, parent=None):
         super().__init__(orientation, parent)
-        self.setHandleWidth(10)
+        self.setHandleWidth(Editor.splitter_handle_width)
         self.setStyleSheet("""
             QSplitter::handle {
                 background: #3C3C3C;

@@ -45,5 +45,35 @@
             "Python API": {},
             "Contact us": {}
         }
+    },
+    "editor": {
+        "handle_size" : 40,
+        "handle_color" : "#4A90D9",
+        "handle_outline_thickness" : 1.5,
+        "handle_outline_color" : "#FFFFFF",
+        "min_item_size" : 40,
+        "canvas_height" : 800,
+        "sidebar_default" : 200,
+        "sidebar_min" : 200,
+        "sidebar_standby" : 300,
+        "sidebar_max" : 700,
+        "is_draw_ruled_lines" : true,
+        "ruled_line_interval" : 100,
+        "ruled_line_thin_thickness" : 1.0,
+        "ruled_line_thick_thickness" : 1.5,
+        "ruled_line_thich_color" : "#505050",
+        "ruled_line_thin_color" : "#3C3C3C",
+        "scaling_step" : 0.1,
+        "canvas_bg_color" : "#1E1E1E",
+        "image_item_frame_color" : "#4A90D9",
+        "image_item_frame_thickness" : 4.0,
+        "memo_paper_color" : "#FFFDF0",
+        "memo_text_color" : "#333333",
+        "memo_text_font_size" : 180,
+        "memo_text_font" : "Yu Gothic",
+        "memo_text_margin" : 20,
+        "command_line_text_color" : "#FFFFFF",
+        "command_line_bg_color" : "#303030",
+        "splitter_handle_width" : 10
     }
 }
