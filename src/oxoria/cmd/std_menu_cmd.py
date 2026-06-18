@@ -1,6 +1,8 @@
 from pathlib import Path
 
 from PySide6.QtWidgets import QFileDialog
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QDesktopServices
 
 from oxoria.ui.ui_var import UI_Var
 from oxoria.global_var import GBVar
@@ -84,6 +86,11 @@ class StdMenuCmd:
 
     def force_quit_app(self) -> None:
         self.app_api.quit_app()
+
+    def open_api_ref(self) -> None:
+        api_ref_path = Path(__file__).resolve().parents[1] / "_resources/docs/api_reference.html"
+        api_ref_path = str(api_ref_path)
+        QDesktopServices.openUrl(QUrl.fromLocalFile(api_ref_path))
 
     def open_settings(self) -> None:
         self.app_api.open_settings()

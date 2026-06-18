@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oxoria API Reference</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f5f5f3;--bg3:#eeecea;
+  --text:#1a1a18;--text2:#555552;--text3:#888784;
+  --border:#e0ddd8;--border2:#c8c5c0;
+  --accent:#534AB7;--accent-bg:#EEEDFE;--accent-text:#3C3489;
+  --code-bg:#f0ede8;--code-text:#3C3489;
+  --tag-bg:#E1F5EE;--tag-text:#0F6E56;
+  --warn-bg:#FAEEDA;--warn-text:#854F0B;
+  --sidebar:240px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1c1b1a;--bg2:#252422;--bg3:#2e2c2a;
+    --text:#e8e5e0;--text2:#aaa89e;--text3:#706e67;
+    --border:#3a3835;--border2:#4a4845;
+    --accent-bg:#26215C;--accent-text:#AFA9EC;
+    --code-bg:#2a2824;--code-text:#AFA9EC;
+    --tag-bg:#04342C;--tag-text:#5DCAA5;
+    --warn-bg:#412402;--warn-text:#FAC775;
+  }
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;display:flex;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+#sidebar{width:var(--sidebar);flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;padding:16px 0}
+.sidebar-search{padding:0 12px 12px;border-bottom:1px solid var(--border)}
+.sidebar-search input{width:100%;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);font-size:13px;outline:none}
+.sidebar-search input:focus{border-color:var(--accent)}
+.nav-group{margin-top:8px}
+.nav-file{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding:8px 16px 4px;margin-top:4px}
+.nav-item{display:block;padding:5px 16px 5px 24px;font-size:13px;color:var(--text2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:2px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-bg)}
+
+#main{flex:1;overflow-y:auto;padding:32px 48px;max-width:900px}
+#search-banner{display:none;background:var(--accent-bg);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;margin-bottom:20px;font-size:13px;color:var(--accent-text)}
+
+.file-section{margin-bottom:48px;scroll-margin-top:24px}
+.file-header{border-bottom:2px solid var(--border);padding-bottom:10px;margin-bottom:20px}
+.file-header h2{font-size:20px;font-weight:600;color:var(--text)}
+.file-header .file-name{font-size:12px;font-family:monospace;color:var(--text3);margin-top:2px}
+.file-desc{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.7}
+
+.method{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden}
+.method-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.method-header:hover{background:var(--bg3)}
+.method-name{font-family:monospace;font-size:14px;font-weight:600;color:var(--accent-text)}
+.method-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:4px;background:var(--tag-bg);color:var(--tag-text)}
+.method-badge.cls{background:var(--accent-bg);color:var(--accent-text)}
+.method-badge.dec{background:var(--warn-bg);color:var(--warn-text)}
+.chevron{margin-left:auto;font-size:11px;color:var(--text3);transition:transform .2s}
+.chevron.open{transform:rotate(180deg)}
+.method-body{padding:16px;display:none}
+.method-body.open{display:block}
+
+.sig-block{background:var(--code-bg);border-radius:6px;padding:10px 14px;margin-bottom:12px;font-family:monospace;font-size:13px;color:var(--code-text);overflow-x:auto;white-space:pre}
+.method-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.7}
+
+table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}
+th{text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding:6px 10px;border-bottom:1px solid var(--border)}
+td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
+td:first-child{font-family:monospace;font-size:12px;color:var(--accent-text);white-space:nowrap;width:1%}
+tr:last-child td{border-bottom:none}
+.return-type{background:var(--tag-bg);color:var(--tag-text);padding:1px 6px;border-radius:4px;font-family:monospace;font-size:11px}
+
+.warn-box{background:var(--warn-bg);border-left:3px solid #EF9F27;border-radius:0 6px 6px 0;padding:10px 14px;margin-top:10px;font-size:12px;color:var(--warn-text);line-height:1.6}
+.warn-box strong{font-weight:600}
+.note-box{background:var(--bg3);border-left:3px solid var(--border2);border-radius:0 6px 6px 0;padding:10px 14px;margin-top:10px;font-size:12px;color:var(--text2);line-height:1.6}
+
+#toc{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:32px}
+#toc h3{font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+#toc ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:4px 16px}
+#toc li a{font-size:13px;font-family:monospace;color:var(--accent-text)}
+#toc li a:hover{color:var(--accent)}
+
+code{background:var(--code-bg);color:var(--code-text);padding:1px 5px;border-radius:3px;font-size:12px;font-family:monospace}
+
+@media(max-width:700px){
+  #sidebar{display:none}
+  #main{padding:16px 20px}
+  #toc ul{grid-template-columns:1fr}
+}
+.hidden-by-search{display:none}
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="sidebar-search">
+    <input type="search" id="sidebar-search" placeholder="Search methods…" oninput="filterSearch(this.value)">
+  </div>
+  <div class="nav-group" id="nav-links"></div>
+</nav>
+
+<main id="main">
+  <h1 style="font-size:24px;font-weight:700;margin-bottom:4px">Oxoria API Reference</h1>
+  <p style="color:var(--text3);font-size:13px;margin-bottom:24px">7 modules · Complete method reference</p>
+
+  <div id="search-banner"></div>
+
+  <div id="toc">
+    <h3>Modules</h3>
+    <ul>
+      <li><a href="#cv_api">cv_api.py — opencv_convert</a></li>
+      <li><a href="#std_cv_cmd">std_cv_cmd.py — CvProcessAPI</a></li>
+      <li><a href="#std_menu_cmd">std_menu_cmd.py — StdMenuCmd</a></li>
+      <li><a href="#canvas_api">canvas_api.py — CanvasAPI</a></li>
+      <li><a href="#app_api">app_api.py — AppAPI</a></li>
+      <li><a href="#resources_api">resources_api.py — ResourcesAPI</a></li>
+      <li><a href="#search_api">search_api.py — SearchAPI</a></li>
+    </ul>
+  </div>
+
+  <!-- cv_api -->
+  <section class="file-section" id="cv_api">
+    <div class="file-header">
+      <h2>opencv_convert</h2>
+      <div class="file-name">cv_api.py</div>
+    </div>
+    <div class="file-desc">A <strong>decorator function</strong> that bridges PySide6 canvas items and OpenCV-compatible NumPy arrays. It automatically extracts the pixmap from each selected canvas item, converts it to an RGBA NumPy array, passes it to the decorated function as <code>cv_img</code>, and writes the processed result back to the canvas.</div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-badge dec">decorator</span>
+        <span class="method-name">@opencv_convert</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">@opencv_convert
+def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
+    ...</div>
+        <table>
+          <tr><th>Step</th><th>Description</th></tr>
+          <tr><td>1</td><td>Retrieves all selected items via <code>CanvasAPI().get_selected()</code></td></tr>
+          <tr><td>2</td><td>Converts each item's <code>base_pixmap</code> to <code>QImage.Format_RGBA8888</code></td></tr>
+          <tr><td>3</td><td>Casts the image data to a <code>np.ndarray</code> of shape <code>(H, W, 4)</code></td></tr>
+          <tr><td>4</td><td>Injects it into the decorated function as the <code>cv_img</code> keyword argument</td></tr>
+          <tr><td>5</td><td>Converts the returned <code>np.ndarray</code> back to <code>QPixmap</code></td></tr>
+          <tr><td>6</td><td>Writes the result back via <code>CanvasAPI().set_pixmap()</code></td></tr>
+        </table>
+        <div class="note-box">The decorated function must accept <code>cv_img: np.ndarray = None</code> and must return a <code>np.ndarray</code> of shape <code>(H, W, 4)</code> in RGBA format. The decorator iterates over all selected items independently. No value is returned from the wrapper.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- std_cv_cmd -->
+  <section class="file-section" id="std_cv_cmd">
+    <div class="file-header">
+      <h2>CvProcessAPI</h2>
+      <div class="file-name">std_cv_cmd.py</div>
+    </div>
+    <div class="file-desc">Provides a collection of OpenCV-based image processing operations applied to currently selected canvas items. All methods are decorated with <code>@opencv_convert</code> and <code>@classmethod</code>.</div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-badge cls">classmethod</span>
+        <span class="method-name">to_blackwhite</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">cls.to_blackwhite(cv_img: np.ndarray = None) -> np.ndarray</div>
+        <p class="method-desc">Converts the selected image(s) to grayscale (black &amp; white).</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>cv_img</td><td>Injected automatically by <code>@opencv_convert</code>; do not pass manually</td></tr>
+        </table>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">np.ndarray</span></td><td>RGBA image converted from grayscale</td></tr>
+        </table>
+        <div class="note-box">Uses <code>cv2.COLOR_BGRA2GRAY</code> then <code>cv2.COLOR_GRAY2RGBA</code> for round-trip conversion.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-badge cls">classmethod</span>
+        <span class="method-name">recover_color</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">cls.recover_color(cv_img: np.ndarray = None) -> np.ndarray</div>
+        <p class="method-desc">Returns the image unchanged. Intended to restore a previously processed image to its original state.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">np.ndarray</span></td><td>Original RGBA image as-is</td></tr>
+        </table>
+        <div class="note-box">This method is a pass-through; actual restoration depends on <code>base_pixmap</code> holding the original data.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-badge cls">classmethod</span>
+        <span class="method-name">denoise_img</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">cls.denoise_img(cv_img: np.ndarray = None) -> np.ndarray</div>
+        <p class="method-desc">Applies colored non-local means denoising to the selected image(s).</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">np.ndarray</span></td><td>Denoised RGBA image</td></tr>
+        </table>
+        <div class="note-box">Uses <code>cv2.fastNlMeansDenoisingColored</code> with fixed parameters <code>(h=10, hColor=10, templateWindowSize=7, searchWindowSize=21)</code>. These are not currently configurable.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-badge cls">classmethod</span>
+        <span class="method-name">custom_operation</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">cls.custom_operation(cv2_cmd: str, cv_img: np.ndarray = None) -> np.ndarray</div>
+        <p class="method-desc">Executes an arbitrary OpenCV expression string and applies the result to the selected image(s).</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>cv2_cmd</td><td>A Python expression string; has access to <code>cv2</code>, <code>np</code>, and <code>cv_img</code> in its execution context</td></tr>
+          <tr><td>cv_img</td><td>Injected automatically by <code>@opencv_convert</code></td></tr>
+        </table>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">np.ndarray</span></td><td>Result of the evaluated expression</td></tr>
+        </table>
+        <div class="warn-box"><strong>⚠️ Security Warning:</strong> This method uses <code>eval()</code> to execute the expression. Only pass trusted, validated strings. Never expose this to untrusted user input, as it can execute arbitrary code.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- std_menu_cmd -->
+  <section class="file-section" id="std_menu_cmd">
+    <div class="file-header">
+      <h2>StdMenuCmd</h2>
+      <div class="file-name">std_menu_cmd.py</div>
+    </div>
+    <div class="file-desc">Implements standard menu-bar commands (File menu operations, window management, etc.) for the Oxoria application. Relies on <code>CanvasAPI</code>, <code>ResourcesAPI</code>, and <code>AppAPI</code> internally.</div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">__init__</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">__init__(self)</div>
+        <p class="method-desc">Initializes the command class and instantiates internal API objects.</p>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">save_as</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">save_as(self) -> None</div>
+        <p class="method-desc">Opens a Save dialog and saves the current canvas to a new <code>.oxoria</code> file chosen by the user.</p>
+        <div class="note-box">Requires <code>UI_Var.MAIN_WINDOW</code> to be set. The <code>.oxoria</code> suffix is enforced regardless of the user's input. Updates <code>GBVar.OPENED_FILE</code>.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">save_file</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">save_file(self) -> None</div>
+        <p class="method-desc">Saves the current canvas to the already-opened file. Falls back to <code>save_as()</code> if no file is currently open.</p>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">open_resource</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">open_resource(self) -> None</div>
+        <p class="method-desc">Opens a file picker dialog and loads the chosen file onto the canvas as a resource.</p>
+        <div class="note-box">Accepts all file types. Requires <code>UI_Var.MAIN_WINDOW</code> to be set.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">new_canvas</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">new_canvas(self) -> None</div>
+        <p class="method-desc">Saves the current file and then clears the canvas.</p>
+        <div class="note-box">Calls <code>save_file()</code> before clearing, so unsaved work is preserved.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">open_oxoria_file</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">open_oxoria_file(self) -> None</div>
+        <p class="method-desc">Opens a <code>.oxoria</code> project file selected by the user. If a file is already open, <code>new_canvas()</code> is called first.</p>
+        <div class="note-box">Requires <code>UI_Var.MAIN_WINDOW</code> to be set.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">export_canvas</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">export_canvas(self) -> None</div>
+        <p class="method-desc">Exports the current canvas as an <code>.oxoarchive</code> file (zip-based bundle) to a user-selected path.</p>
+        <div class="note-box">Requires <code>UI_Var.MAIN_WINDOW</code> to be set. The <code>.oxoarchive</code> suffix is enforced.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">new_window</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">new_window(self) -> None</div>
+        <p class="method-desc">Opens a new application window.</p>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">quit_app</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">quit_app(self) -> None</div>
+        <p class="method-desc">Saves the current file and then quits the application.</p>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">force_quit_app</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">force_quit_app(self) -> None</div>
+        <p class="method-desc">Quits the application immediately without saving.</p>
+        <div class="warn-box"><strong>⚠️</strong> Any unsaved changes will be lost.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">test</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">test(self) -> None</div>
+        <p class="method-desc">Prints a test message to stdout. Used for development/debugging.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- canvas_api -->
+  <section class="file-section" id="canvas_api">
+    <div class="file-header">
+      <h2>CanvasAPI</h2>
+      <div class="file-name">canvas_api.py</div>
+    </div>
+    <div class="file-desc">Provides the primary interface for canvas state management, including saving/loading project files, managing items on the scene, and exporting/importing canvas archives.</div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">make_oxoria_file</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">make_oxoria_file(self) -> dict</div>
+        <p class="method-desc">Serializes the current canvas scene into a dictionary suitable for JSON export.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">dict</span></td><td>Keys are item pointers; values contain <code>size_h</code>, <code>size_w</code>, <code>pos_x</code>, <code>pos_y</code></td></tr>
+        </table>
+        <div class="note-box">Only <code>ImageItem</code> instances are included. Returns early if <code>UI_Var.MAIN_CANVAS</code> is <code>None</code>.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">save_oxoria_file</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">save_oxoria_file(self, saving_path: str) -> None</div>
+        <p class="method-desc">Serializes and saves the current canvas to a <code>.oxoria</code> JSON file.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>saving_path</td><td>Absolute or relative path to write the file</td></tr>
+        </table>
+        <div class="note-box">Updates <code>GBVar.OPENED_FILE</code> upon completion.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">open_oxoria_file</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">open_oxoria_file(self, opening_path: str | Path) -> None</div>
+        <p class="method-desc">Loads a <code>.oxoria</code> project file and restores all image items to the canvas.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>opening_path</td><td>Path to the <code>.oxoria</code> file</td></tr>
+        </table>
+        <div class="note-box">Silently returns if the path does not exist, is not <code>.oxoria</code>, or cannot be parsed. Only items whose pointers exist in the current resource profile are restored. Updates <code>GBVar.OPENED_FILE</code>.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">open_resource_on_canvas</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">open_resource_on_canvas(self, img_path: str | Path) -> None</div>
+        <p class="method-desc">Opens an image file and places it onto the canvas.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>img_path</td><td>Path to the image file</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">clear_canvas</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">clear_canvas(self) -> None</div>
+        <p class="method-desc">Removes all items from the canvas scene and resets <code>GBVar.OPENED_FILE</code>.</p>
+        <div class="warn-box"><strong>⚠️ Destructive operation.</strong> Call <code>save_file()</code> before invoking if preservation is needed.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">wrap_canvas</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">wrap_canvas(self, archive_path: str | Path) -> None</div>
+        <p class="method-desc">Packages the current canvas and its associated image resources into an <code>.oxoarchive</code> file.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>archive_path</td><td>Destination path for the archive</td></tr>
+        </table>
+        <div class="note-box">Creates a temporary directory <code>temp_export/</code> under <code>GBVar.DATA_DIR</code>, builds a zip archive, then renames it to <code>.oxoarchive</code>. The temp directory is removed after archiving. Only resources referenced by the current canvas are included.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">delete_item</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">delete_item(self, items_to_delete: list[ImageItem]) -> None</div>
+        <p class="method-desc">Removes a list of <code>ImageItem</code> instances from the canvas scene.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>items_to_delete</td><td>List of items to remove</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">get_selected</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">get_selected(self) -> list[ImageItem]</div>
+        <p class="method-desc">Returns a list of currently selected items on the canvas.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">list[ImageItem]</span></td><td>Currently selected scene items</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">group_selected</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">group_selected(self) -> None</div>
+        <p class="method-desc">Groups all currently selected items into a single <code>QGraphicsItemGroup</code>.</p>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">is_anything_selected</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">is_anything_selected(self) -> bool</div>
+        <p class="method-desc">Returns whether any item is currently selected on the canvas.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">bool</span></td><td><code>True</code> if at least one item is selected</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">set_to_origin</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">set_to_origin(self) -> None</div>
+        <p class="method-desc">Resets the canvas view transform, centers on the origin, and applies a default zoom scale of <code>0.15</code>.</p>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">set_pixmap</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">set_pixmap(self, pixmap: QPixmap, image_item: ImageItem) -> None</div>
+        <p class="method-desc">Replaces the pixmap of an <code>ImageItem</code> on the canvas, updating both <code>base_pixmap</code> and the displayed scaled version.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>pixmap</td><td>New <code>QPixmap</code> to assign</td></tr>
+          <tr><td>image_item</td><td>The target canvas item</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- app_api -->
+  <section class="file-section" id="app_api">
+    <div class="file-header">
+      <h2>AppAPI</h2>
+      <div class="file-name">app_api.py</div>
+    </div>
+    <div class="file-desc">Handles application-level operations such as launching subprocesses and managing the application lifecycle.</div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">run_capture_monitor</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">run_capture_monitor(self) -> None</div>
+        <p class="method-desc">Launches the screen capture monitor as a background process, if not already running.</p>
+        <div class="note-box">Checks running processes via <code>psutil</code> before launching to prevent duplicate instances. The monitor script path is resolved relative to the module's location.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">open_new_window</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">open_new_window(self) -> None</div>
+        <p class="method-desc">Opens a new Oxoria application window as an independent subprocess.</p>
+        <div class="note-box">Resolves and launches <code>__main__.py</code> in the application root directory. Prints an error to stdout if the entry script is not found.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">quit_app</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">quit_app(self) -> None</div>
+        <p class="method-desc">Quits the main Qt application.</p>
+        <div class="note-box">Calls <code>GBVar.MAIN_APP.quit()</code>. Does nothing if <code>MAIN_APP</code> is <code>None</code>.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- resources_api -->
+  <section class="file-section" id="resources_api">
+    <div class="file-header">
+      <h2>ResourcesAPI</h2>
+      <div class="file-name">resources_api.py</div>
+    </div>
+    <div class="file-desc">Manages the local image resource library: importing, profiling, tagging, and searching image assets identified by perceptual hash pointers.</div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">__init__</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">__init__(self, data_path: str | None = None)</div>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>data_path</td><td>Override for the data directory; defaults to <code>GBVar.DATA_DIR</code></td></tr>
+        </table>
+        <div class="note-box">On macOS (<code>Darwin</code>), sets <code>OMP_NUM_THREADS=1</code> to avoid OpenMP conflicts.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">clone_resource_to_repo</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">clone_resource_to_repo(self, original_path: str, new_path: str) -> None</div>
+        <p class="method-desc">Copies an image file into the local resource library directory.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>original_path</td><td>Source file path</td></tr>
+          <tr><td>new_path</td><td>Destination filename (relative to <code>resources_lib/</code>)</td></tr>
+        </table>
+        <div class="note-box">Skips the copy if the destination already exists.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">check_exists</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">check_exists(self, img_hash: str | None, img_path: str | None, tolerance: float = 0) -> tuple[str | None, bool | None]</div>
+        <p class="method-desc">Checks whether an image (by hash or path) already exists in the resource library.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>img_hash</td><td>Precomputed hash; if <code>None</code>, computed from <code>img_path</code></td></tr>
+          <tr><td>img_path</td><td>Image file path; used to compute hash if <code>img_hash</code> is <code>None</code></td></tr>
+          <tr><td>tolerance</td><td>Similarity tolerance for fuzzy matching; <code>0</code> = exact match (default: <code>0</code>)</td></tr>
+        </table>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">tuple</span></td><td><code>(hash_value, exists_flag)</code>; both <code>None</code> if neither argument is provided</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">get_resources_profile</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">get_resources_profile(self) -> dict</div>
+        <p class="method-desc">Returns the full resource profile dictionary from <code>resources_profile.json</code>.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">dict</span></td><td>All resource entries; empty dict if the profile file does not exist</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">make_resource_profile</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">make_resource_profile(self, img_path: str, name: str = None, memo: str = None, tags: list[str] = None, make_clone_path: bool = True) -> dict</div>
+        <p class="method-desc">Constructs a profile dictionary for a new resource (does not write to disk).</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>img_path</td><td>Path to the image</td></tr>
+          <tr><td>name</td><td>Display name; defaults to the filename stem</td></tr>
+          <tr><td>memo</td><td>Free-text memo; defaults to <code>""</code></td></tr>
+          <tr><td>tags</td><td>List of tag strings; defaults to <code>[]</code></td></tr>
+          <tr><td>make_clone_path</td><td>If <code>True</code>, stores only the filename (not the full path) in the profile (default: <code>True</code>)</td></tr>
+        </table>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">dict</span></td><td>Profile with keys <code>path</code>, <code>name</code>, <code>memo</code>, <code>tags</code></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">write_resource_profile</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">write_resource_profile(self, pointer: str, profile: dict, merge: bool = False) -> bool</div>
+        <p class="method-desc">Writes or updates a single resource entry in <code>resources_profile.json</code>.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>pointer</td><td>Unique hash identifier for the resource</td></tr>
+          <tr><td>profile</td><td>Profile data; must contain a <code>"path"</code> key</td></tr>
+          <tr><td>merge</td><td>If <code>True</code>, merges with the existing profile instead of replacing (default: <code>False</code>)</td></tr>
+        </table>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">bool</span></td><td><code>True</code> on success; <code>False</code> if <code>"path"</code> is missing from <code>profile</code></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">import_resource</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">import_resource(self, img_hash: str | None, img_path: str | None, profile: dict, skip_existencce_check: bool = True, tolerance: float = 0, make_clone: bool = True) -> bool</div>
+        <p class="method-desc">Imports an image into the resource library: adds its hash, writes its profile, and optionally copies the file.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>img_hash</td><td>Precomputed hash; computed from <code>img_path</code> if <code>None</code></td></tr>
+          <tr><td>img_path</td><td>Source image path</td></tr>
+          <tr><td>profile</td><td>Resource profile dictionary</td></tr>
+          <tr><td>skip_existencce_check</td><td>If <code>True</code>, skips duplicate detection (default: <code>True</code>)</td></tr>
+          <tr><td>tolerance</td><td>Hash similarity tolerance for duplicate check (default: <code>0</code>)</td></tr>
+          <tr><td>make_clone</td><td>If <code>True</code>, copies the file into the repository (default: <code>True</code>)</td></tr>
+        </table>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">bool</span></td><td><code>True</code> on success; <code>False</code> if the resource already exists (when check is enabled) or if both hash and path are <code>None</code></td></tr>
+        </table>
+        <div class="warn-box"><strong>Note:</strong> The parameter name <code>skip_existencce_check</code> contains a typo (<code>existencce</code>). Use it as-is in your code.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">pointer_to_path</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">pointer_to_path(self, pointer: str) -> str | None</div>
+        <p class="method-desc">Resolves a resource pointer (hash) to its absolute file path.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">str | None</span></td><td>Absolute path string, or <code>None</code> if not found</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">path_to_pointer</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">path_to_pointer(self, path: str) -> str | None</div>
+        <p class="method-desc">Finds the resource pointer associated with a stored relative path.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">str | None</span></td><td>Pointer string, or <code>None</code> if not found</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">name_to_path</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">name_to_path(self, name: str) -> str | None</div>
+        <p class="method-desc">Looks up the relative path for a resource by its display name.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">str | None</span></td><td>Relative path string, or <code>None</code> if not found</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">filter_pointer_with_tag</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">filter_pointer_with_tag(self, tag: str) -> list[str]</div>
+        <p class="method-desc">Returns all resource pointers that have the specified tag.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">list[str]</span></td><td>List of matching pointer strings</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">filter_pointer_with_category</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">filter_pointer_with_category(self, category: str) -> list[str]</div>
+        <p class="method-desc">Returns all resource pointers matching the specified category.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">list[str]</span></td><td>List of matching pointer strings</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">filter_pointer_with_memo</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">filter_pointer_with_memo(self, kw: str)</div>
+        <div class="warn-box"><strong>⚠️ Not implemented:</strong> Method body is <code>pass</code>. Not yet available.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">edit_memo</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">edit_memo(self, pointer: str, memo_text: str) -> None</div>
+        <p class="method-desc">Updates the memo field of a resource profile in place.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>pointer</td><td>Resource hash</td></tr>
+          <tr><td>memo_text</td><td>New memo content</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">edit_tags</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">edit_tags(self, pointer: str, tags: list[str], mode: str = "append") -> None</div>
+        <p class="method-desc">Appends or removes tags from a resource's profile.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>pointer</td><td>Resource hash</td></tr>
+          <tr><td>tags</td><td>Tags to add or remove</td></tr>
+          <tr><td>mode</td><td><code>"append"</code> adds new tags (deduplicates); <code>"remove"</code> removes specified tags (default: <code>"append"</code>)</td></tr>
+        </table>
+        <div class="note-box">Silently returns if <code>pointer</code> is not in the current profile or if <code>mode</code> is unrecognized.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- search_api -->
+  <section class="file-section" id="search_api">
+    <div class="file-header">
+      <h2>SearchAPI</h2>
+      <div class="file-name">search_api.py</div>
+    </div>
+    <div class="file-desc">Provides both semantic (vector-based) and fuzzy string-based search over the resource library's keywords and names.</div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">__init__</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">__init__(self)</div>
+        <p class="method-desc">Initializes <code>UseVector</code>, <code>SearchBase</code>, and <code>FaissIndexBase</code> internally.</p>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">append_search_base</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">append_search_base(self, kw: str) -> None</div>
+        <p class="method-desc">Adds a keyword to the FAISS vector index and the in-memory search base.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>kw</td><td>Keyword string to index</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">semantic_search_kw</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">semantic_search_kw(self, kw: str, return_num: int = 3) -> list[str]</div>
+        <p class="method-desc">Searches for the most semantically similar keywords to the query using the FAISS index.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>kw</td><td>Query keyword</td></tr>
+          <tr><td>return_num</td><td>Maximum number of results to return (default: <code>3</code>)</td></tr>
+        </table>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">list[str]</span></td><td>List of matching keyword strings; may be shorter than <code>return_num</code> if the search base is small</td></tr>
+        </table>
+        <div class="note-box">Uses a distance cutoff of <code>0.65</code>; results below this threshold are excluded.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">semantic_search_kw_to_pointer</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">semantic_search_kw_to_pointer(self, kw: str, return_num: int = 3) -> list[str]</div>
+        <p class="method-desc">Performs semantic search and maps the results back to resource pointers.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>kw</td><td>Query keyword</td></tr>
+          <tr><td>return_num</td><td>Number of results to return (default: <code>3</code>)</td></tr>
+        </table>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">list[str | None]</span></td><td>List of length <code>return_num</code>; positions without a matching pointer contain <code>None</code></td></tr>
+        </table>
+        <div class="note-box">Matches are made by comparing search results against the <code>"memo"</code> field of each resource profile.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">distance_search_kw</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">distance_search_kw(self, kw: str, return_num: int = 3, cutoff: float = 0.5) -> list[str]</div>
+        <p class="method-desc">Searches for resources by fuzzy string matching on display names using <code>difflib</code>.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>kw</td><td>Query string</td></tr>
+          <tr><td>return_num</td><td>Maximum number of results (default: <code>3</code>)</td></tr>
+          <tr><td>cutoff</td><td>Minimum similarity score <code>[0.0, 1.0]</code>; results below this are discarded (default: <code>0.5</code>)</td></tr>
+        </table>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">list[str]</span></td><td>List of resource pointer strings matching the name query</td></tr>
+        </table>
+        <div class="warn-box"><strong>Note:</strong> The <code>cutoff</code> parameter is accepted in the signature, but the internal <code>difflib.get_close_matches</code> call hardcodes <code>cutoff=0.5</code>, so the passed value is ignored.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const data=[
+  {file:'cv_api',label:'cv_api.py',methods:['opencv_convert']},
+  {file:'std_cv_cmd',label:'std_cv_cmd.py',methods:['to_blackwhite','recover_color','denoise_img','custom_operation']},
+  {file:'std_menu_cmd',label:'std_menu_cmd.py',methods:['__init__','save_as','save_file','open_resource','new_canvas','open_oxoria_file','export_canvas','new_window','quit_app','force_quit_app','test']},
+  {file:'canvas_api',label:'canvas_api.py',methods:['make_oxoria_file','save_oxoria_file','open_oxoria_file','open_resource_on_canvas','clear_canvas','wrap_canvas','delete_item','get_selected','group_selected','is_anything_selected','set_to_origin','set_pixmap']},
+  {file:'app_api',label:'app_api.py',methods:['run_capture_monitor','open_new_window','quit_app']},
+  {file:'resources_api',label:'resources_api.py',methods:['__init__','clone_resource_to_repo','check_exists','get_resources_profile','make_resource_profile','write_resource_profile','import_resource','pointer_to_path','path_to_pointer','name_to_path','filter_pointer_with_tag','filter_pointer_with_category','filter_pointer_with_memo','edit_memo','edit_tags']},
+  {file:'search_api',label:'search_api.py',methods:['__init__','append_search_base','semantic_search_kw','semantic_search_kw_to_pointer','distance_search_kw']}
+];
+
+const nav=document.getElementById('nav-links');
+data.forEach(g=>{
+  const fileEl=document.createElement('div');
+  fileEl.className='nav-file';
+  fileEl.textContent=g.label;
+  nav.appendChild(fileEl);
+  g.methods.forEach(m=>{
+    const a=document.createElement('a');
+    a.className='nav-item';
+    a.textContent=m;
+    a.href='#'+g.file;
+    a.dataset.method=m;
+    a.dataset.section=g.file;
+    a.onclick=e=>{
+      e.preventDefault();
+      document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+      const sec=document.getElementById(g.file);
+      if(sec)sec.scrollIntoView({behavior:'smooth',block:'start'});
+      const headers=[...sec.querySelectorAll('.method-header')];
+      const target=headers.find(h=>h.querySelector('.method-name')?.textContent===m);
+      if(target&&!target.nextElementSibling.classList.contains('open'))toggle(target);
+    };
+    nav.appendChild(a);
+  });
+});
+
+function toggle(header){
+  const body=header.nextElementSibling;
+  const ch=header.querySelector('.chevron');
+  body.classList.toggle('open');
+  if(ch)ch.classList.toggle('open',body.classList.contains('open'));
+}
+
+function filterSearch(q){
+  const banner=document.getElementById('search-banner');
+  if(!q){
+    document.querySelectorAll('.method').forEach(m=>m.classList.remove('hidden-by-search'));
+    document.querySelectorAll('.file-section').forEach(s=>s.style.display='');
+    banner.style.display='none';
+    return;
+  }
+  const lq=q.toLowerCase();
+  let total=0;
+  document.querySelectorAll('.file-section').forEach(sec=>{
+    let vis=0;
+    sec.querySelectorAll('.method').forEach(m=>{
+      const name=m.querySelector('.method-name')?.textContent||'';
+      const match=name.toLowerCase().includes(lq);
+      m.classList.toggle('hidden-by-search',!match);
+      if(match)vis++;
+    });
+    sec.style.display=vis===0?'none':'';
+    total+=vis;
+  });
+  banner.style.display='block';
+  banner.textContent=total+' method'+(total===1?'':'s')+' found for "'+q+'"';
+}
+
+document.getElementById('sidebar-search').addEventListener('input',function(){filterSearch(this.value)});
+
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const id=e.target.id;
+      document.querySelectorAll('.nav-item').forEach(a=>{
+        a.classList.toggle('active',a.dataset.section===id);
+      });
+    }
+  });
+},{threshold:0.1,rootMargin:'-10% 0px -80% 0px'});
+document.querySelectorAll('.file-section').forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>
