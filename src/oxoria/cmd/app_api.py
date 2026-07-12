@@ -1,4 +1,5 @@
 import sys
+import json
 import psutil
 import subprocess
 from pathlib import Path
@@ -37,5 +38,39 @@ class AppAPI:
         if main_app is not None:
             main_app.quit()
 
+    def get_command_stack(self,
+                          output_length: int = -1
+                          ) -> list[str]:
+        command_stack = GBVar.COMMAND_STACK
+        if not command_stack:
+             return []
+        output_length = len(command_stack) if output_length == -1 or output_length > len(command_stack) else output_length
+        return command_stack[-1 * output_length]
+    
+
+    def mycommand(self,
+                  cmd: str,
+                  shortcut_alphabet: str
+                  ) -> None:
+        data_dir = GBVar.DATA_DIR
+        app_config_file = Path(data_dir).resolve().parent / "config/app_config.json"
+        with open(app_config_file, "r", encoding="utf-8") as f:
+            app_config = json.load(f)
+        if "mycommand" not in app_config:
+            app_config["mycommand"] = {}
+        app_config["mycommand"][shortcut_alphabet] = cmd
+        with open(app_config_file, "w", encoding="utf-8") as f:
+            json.dump(app_config, f, ensure_ascii=False, indent=2)
+
+    def get_mycommand(self,
+                      shortcut_alphabet: str
+                      ) -> str:
+        data_dir = GBVar.DATA_DIR
+        app_config_file = Path(data_dir).resolve().parent / "config/app_config.json"
+        with open(app_config_file, "r", encoding="utf-8") as f:
+            app_config = json.load(f)
+        if "mycommand" not in app_config:
+            return ""
+        return app_config["mycommand"].get(shortcut_alphabet, "")
 
     

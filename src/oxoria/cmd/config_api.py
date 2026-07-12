@@ -12,6 +12,7 @@ class AppConfigAPI:
     semantic_search_cutoff : float = 0.65
     distance_search_length : int = 1
     distance_search_cutoff : float = 0.5
+    command_stack_length : int = 15
 
     @classmethod
     def init_config(cls):
@@ -19,19 +20,20 @@ class AppConfigAPI:
         app_config_file = Path(data_dir).resolve().parent / "config/app_config.json"
         with open(app_config_file, "r", encoding="utf-8") as f:
             app_config = json.load(f)
+        app_config = app_config.get("app")
         return cls(**app_config)
     
     @classmethod
     def set_config(cls,
-                       attr: str,
-                       new_value: Any
-                       ) -> None:
+                   attr: str,
+                   new_value: Any
+                   ) -> None:
         setattr(cls, attr, new_value)
         data_dir = GBVar.DATA_DIR
         app_config_file = Path(data_dir).resolve().parent / "config/app_config.json"
         with open(app_config_file, "r", encoding="utf-8") as f:
             app_config = json.load(f)
-        app_config[attr] = new_value
+        app_config["app"][attr] = new_value
         with open(app_config_file, "w", encoding="utf-8") as f:
             json.dump(app_config, f, ensure_ascii=False, indent=2)
 
@@ -78,9 +80,9 @@ class EditorConfigAPI:
     
     @classmethod
     def set_config(cls,
-                       attr: str,
-                       new_value: Any
-                       ) -> None:
+                   attr: str,
+                   new_value: Any
+                   ) -> None:
         setattr(cls, attr, new_value)
         data_dir = GBVar.DATA_DIR
         editor_config_file = Path(data_dir).resolve().parent / "config/editor_config.json"
@@ -105,3 +107,21 @@ class UseConfigData:
         if cls._editor_config_instance is None:
             cls._editor_config_instance = EditorConfigAPI.init_config()
         return cls._editor_config_instance
+    
+    @classmethod
+    def set_config(cls,
+                   sector: str,
+                   attr_name: str,
+                   new_value: Any
+                   ) -> None:
+        if sector == "editor":
+            ConfigAPI = EditorConfigAPI
+        elif sector == "app":
+            ConfigAPI = AppConfigAPI
+        else:
+            return None
+        ConfigAPI.set_config(
+            attr=attr_name,
+            new_value=new_value
+        )
+        

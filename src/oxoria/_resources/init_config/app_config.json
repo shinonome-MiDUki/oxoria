@@ -1,6 +1,13 @@
 {
-    "semantic_search_length" : 2,
-    "semantic_search_cutoff" : 0.65,
-    "distance_search_length" : 1,
-    "distance_search_cutoff" : 0.5
+    "app" : {
+        "semantic_search_length" : 2,
+        "semantic_search_cutoff" : 0.65,
+        "distance_search_length" : 1,
+        "distance_search_cutoff" : 0.5,
+        "command_stack_length" : 15
+
+    },
+    "mycommand" : {
+
+    }
 }
