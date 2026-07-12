@@ -2,8 +2,7 @@ import sys
 from PySide6.QtWidgets import QGraphicsTextItem, QGraphicsScene, QGraphicsView, QApplication
 from PySide6.QtCore import Qt, QPointF, QRectF
 from PySide6.QtGui import QColor, QFont, QPen
-
-from oxoria.cmd.config_api import EditorConfigAPI as Editor
+from oxoria.cmd.config_api import UseConfigData as Cfg
 
 class MemoItem(QGraphicsTextItem):
     def __init__(self, pos: QPointF = QPointF(0, 0), size: int = 1200):
@@ -13,12 +12,12 @@ class MemoItem(QGraphicsTextItem):
 
         self.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
 
-        font = QFont(Editor.memo_text_font, Editor.memo_text_font_size)
+        font = QFont(Cfg.editor_config().memo_text_font, Cfg.editor_config().memo_text_font_size)
         self.setFont(font)
-        self.setDefaultTextColor(QColor(Editor.memo_text_color)) 
+        self.setDefaultTextColor(QColor(Cfg.editor_config().memo_text_color)) 
         self.setPlainText("Memo ...")
 
-        self.margin = Editor.memo_text_margin
+        self.margin = Cfg.editor_config().memo_text_margin
         self.setTextWidth(self.size - (self.margin * 2))
 
         self.setFlags(
@@ -33,7 +32,7 @@ class MemoItem(QGraphicsTextItem):
         return QRectF(0, 0, self.size, self.size)
 
     def paint(self, painter, option, widget):
-        painter.setBrush(QColor(Editor.memo_paper_color))
+        painter.setBrush(QColor(Cfg.editor_config().memo_paper_color))
         
         rect = self.boundingRect()
         painter.drawRect(rect)

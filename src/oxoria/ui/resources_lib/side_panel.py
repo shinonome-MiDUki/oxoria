@@ -14,8 +14,8 @@ from PySide6.QtCore import (
 )
 
 from oxoria.cmd.search_api import SearchAPI
-from oxoria.cmd.config_api import AppConfigAPI as Cfg
-from oxoria.cmd.config_api import EditorConfigAPI as Editor
+from oxoria.cmd.config_api import UseConfigData as Cfg
+
 
 class ResourceIcon(QWidget):
     def __init__(self, 
@@ -79,8 +79,8 @@ class SidePanel(QWidget):
         super().__init__(parent)
         self.resource_lib_dir = Path(QSettings("App", "oxoria").value("central_repo_dir")) / "resources_lib"
         self.resources_index_path = self.resource_lib_dir / "resources_profile.json"
-        self.setMinimumWidth(Editor.sidebar_min)
-        self.setMaximumWidth(Editor.sidebar_max)
+        self.setMinimumWidth(Cfg.editor_config().sidebar_min)
+        self.setMaximumWidth(Cfg.editor_config().sidebar_max)
         self._build_ui()
         self._apply_style()
 
@@ -259,16 +259,16 @@ class SidePanel(QWidget):
         if kw.startswith("$"):
             kw = kw[1:]
             suitable_pointer_list = search_api.distance_search_kw(kw=self.search_box.text(),
-                                                                return_num=Cfg.distance_search_length,
-                                                                cutoff=Cfg.distance_search_cutoff)
+                                                                return_num=Cfg.app_config().distance_search_length,
+                                                                cutoff=Cfg.app_config().distance_search_cutoff)
             if suitable_pointer_list and suitable_pointer_list[0] is not None:
                 self._search_item(target_pointer=suitable_pointer_list[0])
             else:
                 self._filter_tree()
         else:
             suitable_pointer_list = search_api.semantic_search_kw_to_pointer(kw=self.search_box.text(),
-                                                                             return_num=Cfg.semantic_search_length,
-                                                                             cutoff=Cfg.semantic_search_cutoff)
+                                                                             return_num=Cfg.app_config().semantic_search_length,
+                                                                             cutoff=Cfg.app_config().semantic_search_cutoff)
             self._filter_tree(pointer_list=suitable_pointer_list)
 
     def _on_item_clicked(self, item, column):

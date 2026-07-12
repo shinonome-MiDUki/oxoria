@@ -1,11 +1,10 @@
 import dataclasses
 import json 
 from pathlib import Path
-from typing import Any, Type
-
-from PySide6 import QtWidgets
+from typing import Any
 
 from oxoria.global_var import GBVar
+
 
 @dataclasses.dataclass
 class AppConfigAPI:
@@ -15,7 +14,7 @@ class AppConfigAPI:
     distance_search_cutoff : float = 0.5
 
     @classmethod
-    def init_app_config(cls):
+    def init_config(cls):
         data_dir = GBVar.DATA_DIR
         app_config_file = Path(data_dir).resolve().parent / "config/app_config.json"
         with open(app_config_file, "r", encoding="utf-8") as f:
@@ -23,7 +22,7 @@ class AppConfigAPI:
         return cls(**app_config)
     
     @classmethod
-    def set_app_config(cls,
+    def set_config(cls,
                        attr: str,
                        new_value: Any
                        ) -> None:
@@ -35,6 +34,7 @@ class AppConfigAPI:
         app_config[attr] = new_value
         with open(app_config_file, "w", encoding="utf-8") as f:
             json.dump(app_config, f, ensure_ascii=False, indent=2)
+
     
 @dataclasses.dataclass
 class EditorConfigAPI:
@@ -68,7 +68,7 @@ class EditorConfigAPI:
     splitter_handle_width : int = 10
 
     @classmethod
-    def init_editor_config(cls) :
+    def init_config(cls) :
         data_dir = GBVar.DATA_DIR
         editor_config_file = Path(data_dir).resolve().parent / "config/editor_config.json"
         with open(editor_config_file, "r", encoding="utf-8") as f:
@@ -77,7 +77,7 @@ class EditorConfigAPI:
         return cls(**editor_config)
     
     @classmethod
-    def set_app_config(cls,
+    def set_config(cls,
                        attr: str,
                        new_value: Any
                        ) -> None:
@@ -89,3 +89,19 @@ class EditorConfigAPI:
         editor_config["editor"][attr] = new_value
         with open(editor_config_file, "w", encoding="utf-8") as f:
             json.dump(editor_config, f, ensure_ascii=False, indent=2)
+
+class UseConfigData:
+    _editor_config_instance = None
+    _app_config_instance = None
+
+    @classmethod
+    def app_config(cls):
+        if cls._app_config_instance is None:
+            cls._app_config_instance = AppConfigAPI.init_config()
+        return cls._app_config_instance
+
+    @classmethod
+    def editor_config(cls):
+        if cls._editor_config_instance is None:
+            cls._editor_config_instance = EditorConfigAPI.init_config()
+        return cls._editor_config_instance

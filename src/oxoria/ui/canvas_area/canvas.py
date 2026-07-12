@@ -17,8 +17,7 @@ from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.canvas_api import CanvasAPI
 from oxoria.cmd.std_menu_cmd import StdMenuCmd
 from oxoria.ui.resources_lib.registering_dialog import RegisterResourcesDialog
-from oxoria.cmd.config_api import AppConfigAPI as Cfg
-from oxoria.cmd.config_api import EditorConfigAPI as Editor
+from oxoria.cmd.config_api import UseConfigData as Cfg
 from oxoria.ui.ui_var import UI_Var
 from oxoria.global_var import GBVar
 
@@ -37,11 +36,11 @@ class MainCanvas(QGraphicsView):
         self.setDragMode(QGraphicsView.DragMode.RubberBandDrag)
         self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
-        self.setBackgroundBrush(QBrush(QColor(Editor.canvas_bg_color)))
+        self.setBackgroundBrush(QBrush(QColor(Cfg.editor_config().canvas_bg_color)))
         self.setAcceptDrops(True)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        Editor.canvas_height = self.size().height()
+        Cfg.editor_config().canvas_height = self.size().height()
         self.centerOn(0, 0)
         self.scale(0.15, 0.15)  
 
@@ -51,13 +50,13 @@ class MainCanvas(QGraphicsView):
 
     def drawBackground(self, painter, rect):
         super().drawBackground(painter, rect)
-        if not Editor.is_draw_ruled_lines:
+        if not Cfg.editor_config().is_draw_ruled_lines:
             return
         
         transform = self.transform()
         scale = transform.m11()  
         
-        base_step = Editor.ruled_line_interval
+        base_step = Cfg.editor_config().ruled_line_interval
         
         if scale > 2.0:
             step = base_step / 2
@@ -74,8 +73,8 @@ class MainCanvas(QGraphicsView):
         start_x = math.floor(left / step) * step
         start_y = math.floor(top / step) * step
 
-        thin_pen = QPen(QColor(Editor.ruled_line_thin_color), Editor.ruled_line_thin_thickness / scale)
-        thick_pen = QPen(QColor(Editor.ruled_line_thich_color), Editor.ruled_line_thick_thickness / scale)
+        thin_pen = QPen(QColor(Cfg.editor_config().ruled_line_thin_color), Cfg.editor_config().ruled_line_thin_thickness / scale)
+        thick_pen = QPen(QColor(Cfg.editor_config().ruled_line_thich_color), Cfg.editor_config().ruled_line_thick_thickness / scale)
 
         x = start_x
         while x < right:
@@ -193,9 +192,9 @@ class MainCanvas(QGraphicsView):
         if modifiers & Qt.KeyboardModifier.ControlModifier:
             factor = 1.0
             if event.key() == Qt.Key_Semicolon:
-                factor = 1.0 + Editor.scaling_step
+                factor = 1.0 + Cfg.editor_config().scaling_step
             elif event.key() == Qt.Key_Colon:
-                factor = 1.0 - Editor.scaling_step
+                factor = 1.0 - Cfg.editor_config().scaling_step
             self.scale(factor, factor)
-            Editor.canvas_height = self.size().height()
+            Cfg.editor_config().canvas_height = self.size().height()
         super().keyPressEvent(event)

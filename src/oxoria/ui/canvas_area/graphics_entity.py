@@ -12,8 +12,7 @@ from PySide6.QtGui import (
 )
 
 from oxoria.ui.canvas_area.resize_handle import ResizeHandle
-from oxoria.cmd.config_api import EditorConfigAPI as Editor
-
+from oxoria.cmd.config_api import UseConfigData as Cfg
 if TYPE_CHECKING:
     BaseClass = QGraphicsItem
 else:
@@ -62,22 +61,22 @@ class ImageItem(object):
         delta_y   = 0.0
 
         if corner == "BR":
-            new_w = max(Editor.min_item_size, item_pos.x())
-            new_h = max(Editor.min_item_size, item_pos.y())
+            new_w = max(Cfg.editor_config().min_item_size, item_pos.x())
+            new_h = max(Cfg.editor_config().min_item_size, item_pos.y())
 
         elif corner == "TR":
-            new_w   = max(Editor.min_item_size, item_pos.x())
-            new_h   = max(Editor.min_item_size, self.img_h - item_pos.y())
+            new_w   = max(Cfg.editor_config().min_item_size, item_pos.x())
+            new_h   = max(Cfg.editor_config().min_item_size, self.img_h - item_pos.y())
             delta_y = item_pos.y()
 
         elif corner == "BL":
-            new_w   = max(Editor.min_item_size, self.img_w - item_pos.x())
-            new_h   = max(Editor.min_item_size, item_pos.y())
+            new_w   = max(Cfg.editor_config().min_item_size, self.img_w - item_pos.x())
+            new_h   = max(Cfg.editor_config().min_item_size, item_pos.y())
             delta_x = item_pos.x()
 
         elif corner == "TL":
-            new_w   = max(Editor.min_item_size, self.img_w - item_pos.x())
-            new_h   = max(Editor.min_item_size, self.img_h - item_pos.y())
+            new_w   = max(Cfg.editor_config().min_item_size, self.img_w - item_pos.x())
+            new_h   = max(Cfg.editor_config().min_item_size, self.img_h - item_pos.y())
             delta_x = item_pos.x()
             delta_y = item_pos.y()
 

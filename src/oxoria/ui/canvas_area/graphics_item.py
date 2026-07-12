@@ -10,7 +10,7 @@ from PySide6.QtGui import (
 )
 
 from oxoria.ui.canvas_area.resize_handle import ResizeHandle
-from oxoria.cmd.config_api import EditorConfigAPI as Editor
+from oxoria.cmd.config_api import UseConfigData as Cfg
 
 class ImageItem(QGraphicsPixmapItem):
 
@@ -46,7 +46,7 @@ class ImageItem(QGraphicsPixmapItem):
     
     @classmethod
     def scale_pixmap(cls, pm):
-        canvas_height = Editor.canvas_height
+        canvas_height = Cfg.editor_config().canvas_height
         minimise_ratio = 5.0
         scale_factor = (canvas_height * minimise_ratio) / float(pm.height())
         scaled = pm.scaled(
@@ -73,22 +73,22 @@ class ImageItem(QGraphicsPixmapItem):
         delta_y   = 0.0
 
         if corner == "BR":
-            new_w = max(Editor.min_item_size, item_pos.x())
-            new_h = max(Editor.min_item_size, item_pos.y())
+            new_w = max(Cfg.editor_config().min_item_size, item_pos.x())
+            new_h = max(Cfg.editor_config().min_item_size, item_pos.y())
 
         elif corner == "TR":
-            new_w   = max(Editor.min_item_size, item_pos.x())
-            new_h   = max(Editor.min_item_size, self.img_h - item_pos.y())
+            new_w   = max(Cfg.editor_config().min_item_size, item_pos.x())
+            new_h   = max(Cfg.editor_config().min_item_size, self.img_h - item_pos.y())
             delta_y = item_pos.y()
 
         elif corner == "BL":
-            new_w   = max(Editor.min_item_size, self.img_w - item_pos.x())
-            new_h   = max(Editor.min_item_size, item_pos.y())
+            new_w   = max(Cfg.editor_config().min_item_size, self.img_w - item_pos.x())
+            new_h   = max(Cfg.editor_config().min_item_size, item_pos.y())
             delta_x = item_pos.x()
 
         elif corner == "TL":
-            new_w   = max(Editor.min_item_size, self.img_w - item_pos.x())
-            new_h   = max(Editor.min_item_size, self.img_h - item_pos.y())
+            new_w   = max(Cfg.editor_config().min_item_size, self.img_w - item_pos.x())
+            new_h   = max(Cfg.editor_config().min_item_size, self.img_h - item_pos.y())
             delta_x = item_pos.x()
             delta_y = item_pos.y()
 
@@ -125,8 +125,8 @@ class ImageItem(QGraphicsPixmapItem):
     def paint(self, painter, option, widget=None):
         super().paint(painter, option, widget)
         if self.isSelected():
-            pen = QPen(QColor(Editor.image_item_frame_color),
-                       Editor.image_item_frame_thickness, 
+            pen = QPen(QColor(Cfg.editor_config().image_item_frame_color),
+                       Cfg.editor_config().image_item_frame_thickness, 
                        Qt.PenStyle.DashLine)
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())

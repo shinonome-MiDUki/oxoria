@@ -19,7 +19,7 @@ from oxoria.ui.ui_var import UI_Var
 from oxoria.global_var import GBVar
 from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.search_api import SearchAPI
-from oxoria.cmd.config_api import EditorConfigAPI as Editor
+from oxoria.cmd.config_api import UseConfigData as Cfg
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         self.splitter.addWidget(self.side_panel)
         self.splitter.addWidget(self.canvas)
 
-        self.splitter.setSizes([Editor.sidebar_default, 9999])
+        self.splitter.setSizes([Cfg.editor_config().sidebar_default, 9999])
         self.splitter.setCollapsible(0, True)  
         self.splitter.setCollapsible(1, False) 
 
