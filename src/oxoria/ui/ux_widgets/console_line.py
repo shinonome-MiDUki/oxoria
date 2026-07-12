@@ -3,7 +3,8 @@ import re
 
 from PySide6.QtWidgets import (
     QWidget, QHBoxLayout, QLabel,
-    QLineEdit, QPushButton, QCompleter
+    QLineEdit, QPushButton, QCompleter,
+    QFileDialog
 )
 from PySide6.QtCore import QStringListModel, QTimer
 
@@ -14,7 +15,6 @@ from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.search_api import SearchAPI
 from oxoria.cmd.app_api import AppAPI
 from oxoria.cmd.config_api import UseConfigData as Cfg
-from oxoria.cmd.config_api import AppConfigAPI, EditorConfigAPI
 from oxoria.global_var import GBVar
 
 class ConsoleLine(QWidget):
@@ -61,6 +61,15 @@ class ConsoleLine(QWidget):
 
 
     def exec_oneline_python(self):
+        cmd = self.python_cmd_input.text()
+        if cmd not in GBVar.COMMAND_STACK and cmd != "":
+            GBVar.COMMAND_STACK.append(cmd)
+            if len(GBVar.COMMAND_STACK) > Cfg.app_config().command_stack_length:
+                GBVar.COMMAND_STACK.pop(0)
+            self.completer_list = [f">{i} - {GBVar.COMMAND_STACK[i * -1]}" for i in range(1, len(GBVar.COMMAND_STACK) + 1)]
+            self.completer_model.setStringList(self.completer_list)
+        self.error_message_box.setText("")
+        self.dismiss_error_box_btn.hide()
         std_menu_cmd = StdMenuCmd()
         std_cv_cmd = CvProcessAPI
         canvas_api = CanvasAPI()
@@ -76,15 +85,15 @@ class ConsoleLine(QWidget):
             "app": app_api,
             "cfg": Cfg
         }
-        cmd = self.python_cmd_input.text()
-        self.error_message_box.setText("")
-        self.dismiss_error_box_btn.hide()
-        if cmd not in GBVar.COMMAND_STACK:
-            GBVar.COMMAND_STACK.append(cmd)
-            if len(GBVar.COMMAND_STACK) > Cfg.app_config().command_stack_length:
-                GBVar.COMMAND_STACK.pop(0)
-            self.completer_list = [f">{i} - {GBVar.COMMAND_STACK[i * -1]}" for i in range(1, len(GBVar.COMMAND_STACK) + 1)]
-            self.completer_model.setStringList(self.completer_list)
+        if cmd.startswith("%"):
+            file_path = cmd.lstrip("%")
+            self.exec_python_file(file_path=file_path, api_set=api_set)
+        else:
+            self.exec_python_command(cmd=cmd, api_set=api_set)
+
+    def exec_python_command(self,
+                            cmd: str,
+                            api_set: dict):
         try:
             exec(cmd, api_set)
             self.python_cmd_input.clear()
@@ -92,13 +101,25 @@ class ConsoleLine(QWidget):
             self.error_message_box.setText(f"{e}")
             self.dismiss_error_box_btn.show()
 
+    def exec_python_file(self, 
+                         file_path: str,
+                         api_set: dict):
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                code = f.read()
+                exec(code, api_set)
+        except Exception as e:
+            self.error_message_box.setText(f"{e}")
+            self.dismiss_error_box_btn.show()
+        self.python_cmd_input.clear()
+
     def dismiss_error_message(self):
         self.error_message_box.setText("")
         self.dismiss_error_box_btn.hide()
 
     def fill_command(self):
         input_cmd = self.python_cmd_input.text()
-        if bool(re.match("^>\d+$", input_cmd)):
+        if bool(re.match(r"^>\d+$", input_cmd)):
             stack_idx = int(input_cmd.lstrip(">"))
             if stack_idx > len(GBVar.COMMAND_STACK):
                 self.python_cmd_input.setText("")
@@ -108,6 +129,10 @@ class ConsoleLine(QWidget):
             shortcut_alphabet = str(input_cmd.lstrip(":"))
             mycommand = AppAPI().get_mycommand(shortcut_alphabet)
             self.python_cmd_input.setText(mycommand)
+        elif input_cmd == "run":
+            filename, _ = QFileDialog.getOpenFileName(self, "Open Python script", "", "Python (*.py)")
+            if filename:
+                self.python_cmd_input.setText(f"%{filename}")
         else:
             return
         
