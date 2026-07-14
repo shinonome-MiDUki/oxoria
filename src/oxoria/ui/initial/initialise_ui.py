@@ -37,7 +37,6 @@ class InitUI(QMainWindow):
         
         self.current_dir = Path(__file__).resolve().parents[2]
         img_path = self.current_dir / "_resources/assets/initial_image.jpg"
-        print(f"Loading image from: {img_path}")
         img = QPixmap(str(img_path))
         self.image_label.setPixmap(img.scaled(600, 345, Qt.KeepAspectRatioByExpanding))
         

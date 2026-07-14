@@ -6,6 +6,7 @@ from pathlib import Path
 
 from oxoria.global_var import GBVar
 from oxoria.ui.ux_widgets.settings_dialog import SettingsDialog
+from oxoria.ui.ux_widgets.console_output import OxoriaConsole
 
 class AppAPI:
     def __init__(self):
@@ -15,7 +16,6 @@ class AppAPI:
         for proc in psutil.process_iter(["cmdline"]):
             cmdl = proc.info["cmdline"]
             if cmdl and cmdl[0] == "Oxoria Screen Capture Monitor":
-                print("working")
                 return None
         tasktray_script = Path(__file__).resolve().parents[1] / "ui/tasktray/tasktray_ui.py"
         subprocess.Popen([sys.executable, str(tasktray_script)], start_new_session=True)
@@ -72,5 +72,16 @@ class AppAPI:
         if "mycommand" not in app_config:
             return ""
         return app_config["mycommand"].get(shortcut_alphabet, "")
+    
+    def get_data_dir(self) -> str:
+        data_dir = GBVar.DATA_DIR
+        return data_dir
+    
+    def get_app_folder_dir(self) -> str:
+        app_folder_dir = Path(GBVar.DATA_DIR).resolve().parent
+        return str(app_folder_dir)
+    
+    def get_gbvar(self) -> GBVar:
+        return GBVar
 
     

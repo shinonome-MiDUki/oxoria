@@ -132,9 +132,6 @@ class SettingsDialog(QDialog):
                    attr_name: str,
                    new_value: Any
                    ):
-        print(attr_name)
-        print(new_value)
-        print("------")
         ConfigType.set_config(
             attr=attr_name,
             new_value=new_value

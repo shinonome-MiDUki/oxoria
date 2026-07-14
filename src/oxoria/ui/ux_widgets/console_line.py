@@ -1,13 +1,15 @@
 import sys
 import re
+from pathlib import Path
 
 from PySide6.QtWidgets import (
     QWidget, QHBoxLayout, QLabel,
     QLineEdit, QPushButton, QCompleter,
     QFileDialog
 )
-from PySide6.QtCore import QStringListModel, QTimer
+from PySide6.QtCore import QStringListModel, QTimer, Qt
 
+from oxoria.ui.ux_widgets.console_output import OxoriaConsole
 from oxoria.cmd.std_menu_cmd import StdMenuCmd
 from oxoria.cmd.std_cv_cmd import CvProcessAPI
 from oxoria.cmd.canvas_api import CanvasAPI
@@ -46,6 +48,13 @@ class ConsoleLine(QWidget):
             )
         layout.addWidget(python_exec_btn)
         python_exec_btn.clicked.connect(self.exec_oneline_python)
+
+        open_console_btn = QPushButton("console")
+        open_console_btn.setStyleSheet(
+            f"color: {Cfg.editor_config().command_line_text_color}; background-color: {Cfg.editor_config().command_line_bg_color};"
+            )
+        open_console_btn.clicked.connect(self.open_oxoria_console)
+        layout.addWidget(open_console_btn)
         layout.addStretch()
 
         self.error_message_box = QLabel("")
@@ -83,7 +92,8 @@ class ConsoleLine(QWidget):
             "resources": resources_api,
             "search": search_api,
             "app": app_api,
-            "cfg": Cfg
+            "cfg": Cfg,
+            "print" : OxoriaConsole.write_console
         }
         if cmd.startswith("%"):
             file_path = cmd.lstrip("%")
@@ -94,23 +104,29 @@ class ConsoleLine(QWidget):
     def exec_python_command(self,
                             cmd: str,
                             api_set: dict):
+        OxoriaConsole.write_console(console_text=f"Executed : {cmd}")
         try:
             exec(cmd, api_set)
             self.python_cmd_input.clear()
         except Exception as e:
             self.error_message_box.setText(f"{e}")
             self.dismiss_error_box_btn.show()
+            OxoriaConsole.write_console(console_text=f"ERROR : {e}")
 
     def exec_python_file(self, 
                          file_path: str,
                          api_set: dict):
+        OxoriaConsole.write_console(console_text=f"Executed Script : {file_path}")
         try:
+            if not Path(file_path).exists():
+                raise Exception("Designated file path not found")
             with open(file_path, "r", encoding="utf-8") as f:
                 code = f.read()
                 exec(code, api_set)
         except Exception as e:
             self.error_message_box.setText(f"{e}")
             self.dismiss_error_box_btn.show()
+            OxoriaConsole.write_console(console_text=f"ERROR : {e}")
         self.python_cmd_input.clear()
 
     def dismiss_error_message(self):
@@ -136,8 +152,12 @@ class ConsoleLine(QWidget):
         else:
             return
         
+    def open_oxoria_console(self):
+        self.oxoria_console = OxoriaConsole()
+        self.oxoria_console.setWindowModality(Qt.NonModal)
+        self.oxoria_console.show()
+        
     def autofill(self, text):
         QTimer.singleShot(
-            0, 
-            lambda: self.python_cmd_input.setText(text.split("-")[-1].strip())
+            0, lambda: self.python_cmd_input.setText(text.split("-")[-1].strip())
             )

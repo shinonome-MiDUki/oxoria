@@ -62,7 +62,6 @@ class TkinterWindow:
         self.window.destroy()
 
     def _cancel_register(self):
-        print("Cancel Register")
         if os.path.exists(self.saved_path):
             os.unlink(self.saved_path)
         self.window.quit()
@@ -143,8 +142,7 @@ class CaptureImageTaskTray:
             h.join()
 
     def trigger(self):
-        print("triggered")
-        print(os.getpid())
+        print(f"Capture Monitor on PID : {os.getpid()}")
         setproctitle.setproctitle("Oxoria Screen Capture Monitor")
         t = threading.Thread(target=self._hotkey_loop, 
                              daemon=True)

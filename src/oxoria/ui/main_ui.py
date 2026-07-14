@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+import datetime
 from pathlib import Path
 
 from PySide6.QtWidgets import (
@@ -14,6 +15,7 @@ from oxoria.ui.canvas_area.ctx_menu import CanvasCtxMenu
 from oxoria.ui.resources_lib.side_panel import SidePanel
 from oxoria.ui.ux_widgets.splitter import Splitter
 from oxoria.ui.ux_widgets.console_line import ConsoleLine
+from oxoria.ui.ux_widgets.console_output import OxoriaConsole
 from oxoria.ui.outline.menu_bar import MenuBar
 from oxoria.ui.ui_var import UI_Var
 from oxoria.global_var import GBVar
@@ -54,6 +56,10 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self.splitter, stretch=1)
         main_layout.addWidget(ConsoleLine())
         UI_Var.MAIN_WINDOW = self
+        OxoriaConsole.write_console(
+            console_text=f"-----{datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S.%f')}----- \n" \
+                "Oxoria launched"
+            )
 
     def check_temp_registered_resource(self):
         temp_resources_path = Path(QSettings("App", "oxoria").value("central_repo_dir")) / "resources_lib/temp_resources.json"

@@ -17,7 +17,6 @@ from oxoria.global_var import GBVar
 
 def check_first_run() -> bool:
     settings = QSettings("App", "oxoria")
-    print(settings.value("first_run", "true"))
     #settings.setValue("first_run", "true")
     if settings.value("first_run", "true") == "true":
         settings.setValue("first_run", "false")

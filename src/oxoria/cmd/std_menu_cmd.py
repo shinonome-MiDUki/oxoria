@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
 
+from oxoria.ui.ux_widgets.console_output import OxoriaConsole
 from oxoria.ui.ui_var import UI_Var
 from oxoria.global_var import GBVar
 from oxoria.cmd.canvas_api import CanvasAPI
@@ -17,7 +18,6 @@ class StdMenuCmd:
         self.app_api = AppAPI()
 
     def save_as(self) -> None:
-        print("Save As command executed")
         main_window = UI_Var.MAIN_WINDOW
         if main_window is None:
             return
@@ -96,4 +96,4 @@ class StdMenuCmd:
         self.app_api.open_settings()
 
     def test(self) -> None:
-        print("Test command executed")
+        OxoriaConsole.write_console("Test command executed")

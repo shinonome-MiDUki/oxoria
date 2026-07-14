@@ -93,7 +93,6 @@ class RegisterResourcesDialog(QDialog):
         side_panel = SidePanel()
         side_panel.append_tree(pointer=self.img_hash,
                                profile=resource_profile)
-        print("Resource registered:", resource_profile)
         self.accept()
         return True
     
@@ -103,11 +102,9 @@ class RegisterResourcesDialog(QDialog):
             self.accept()
 
     def opt_out_register(self):
-        print("Resource import without register:", self.img_path)
         self.accept()
 
     def register_without_open(self):
-        print("Resource registered without opening:", self.img_path)
         register_status = self.register_resource()
         if register_status:
             self.reject()
