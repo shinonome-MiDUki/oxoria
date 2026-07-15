@@ -13,6 +13,7 @@ class AppConfigAPI:
     distance_search_length : int = 1
     distance_search_cutoff : float = 0.5
     command_stack_length : int = 15
+    ide_executable_path : str = ""
 
     @classmethod
     def init_config(cls):

@@ -1,5 +1,7 @@
 import sys
+import subprocess
 import re
+import datetime
 from pathlib import Path
 
 from PySide6.QtWidgets import (
@@ -16,6 +18,7 @@ from oxoria.cmd.canvas_api import CanvasAPI
 from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.search_api import SearchAPI
 from oxoria.cmd.app_api import AppAPI
+from oxoria.cmd.package_api import PackageAPI
 from oxoria.cmd.config_api import UseConfigData as Cfg
 from oxoria.global_var import GBVar
 
@@ -84,6 +87,7 @@ class ConsoleLine(QWidget):
         canvas_api = CanvasAPI()
         resources_api = ResourcesAPI()
         search_api = SearchAPI()
+        package_api = PackageAPI()
         app_api = AppAPI()
         api_set = {
             "std": std_menu_cmd,
@@ -92,6 +96,7 @@ class ConsoleLine(QWidget):
             "resources": resources_api,
             "search": search_api,
             "app": app_api,
+            "package": package_api,
             "cfg": Cfg,
             "print" : OxoriaConsole.write_console
         }
@@ -145,6 +150,29 @@ class ConsoleLine(QWidget):
             shortcut_alphabet = str(input_cmd.lstrip(":"))
             mycommand = AppAPI().get_mycommand(shortcut_alphabet)
             self.python_cmd_input.setText(mycommand)
+        elif bool(re.match(r"^(ide-)\S*\s$", input_cmd)):
+            ide_executable = Cfg.app_config().ide_executable_path
+            if not ide_executable: 
+                return
+            script_dir = Path(GBVar.DATA_DIR).resolve().parent / "script"
+            if not script_dir.exists():
+                script_dir.mkdir(parents=True, exist_ok=True)
+            script_name = input_cmd.split("-")[-1].strip().strip(".py")
+            if script_name:
+                script_path = script_dir / f"{script_name}.py"
+            else:
+                script_path = script_dir / f"custom_script_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.py"
+            if not script_path.exists():
+                with open(script_path, "w", encoding="utf-8") as f:
+                    f.write("")
+            try:
+                subprocess.run([ide_executable, script_path])
+            except Exception as e:
+                self.error_message_box.setText(f"{e}")
+                self.dismiss_error_box_btn.show()
+                OxoriaConsole.write_console(console_text=f"ERROR : {e}")
+                return
+            self.python_cmd_input.setText(f"%{script_path}")
         elif input_cmd == "run":
             filename, _ = QFileDialog.getOpenFileName(self, "Open Python script", "", "Python (*.py)")
             if filename:

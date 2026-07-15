@@ -1,10 +1,12 @@
 import sys
 import json
+from enum import StrEnum
 from pathlib import Path
 
 from PySide6.QtWidgets import (
     QWidget,QVBoxLayout, QHBoxLayout, QLineEdit, 
-    QTreeWidget, QTreeWidgetItem,QLabel, QPushButton
+    QTreeWidget, QTreeWidgetItem,QLabel, QPushButton,
+    QComboBox
 )
 from PySide6.QtGui import (
     QColor, QPixmap, QDrag
@@ -15,6 +17,12 @@ from PySide6.QtCore import (
 
 from oxoria.cmd.search_api import SearchAPI
 from oxoria.cmd.config_api import UseConfigData as Cfg
+from oxoria.global_var import GBVar
+
+
+class SearchMode(StrEnum):
+    SEMANTIC = "semantic"
+    KEYWORD = "keyword"
 
 
 class ResourceIcon(QWidget):
@@ -111,15 +119,20 @@ class SidePanel(QWidget):
         # ── 検索バー ──────────────────────────
         search_frame = QWidget()
         search_frame.setObjectName("searchFrame")
-        sf_layout = QHBoxLayout(search_frame)
+        sf_layout = QVBoxLayout(search_frame)
         sf_layout.setContentsMargins(8, 6, 8, 6)
+        
+        self.search_mode_combo = QComboBox()
+        search_modes = ["semantic", "keyword"]
+        self.search_mode_combo.addItems(search_modes)
+        self.search_mode_combo.setStyleSheet("color: #BBBBBB;")
+        sf_layout.addWidget(self.search_mode_combo)
 
         self.search_box = QLineEdit()
         self.search_box.setPlaceholderText("Search My Resources")
         self.search_box.setObjectName("searchBox")
         self.search_box.setClearButtonEnabled(True)
         self.search_box.editingFinished.connect(self._on_search_changed)
-
         sf_layout.addWidget(self.search_box)
 
         # ── フィルターボタン行 ─────────────────
@@ -256,7 +269,8 @@ class SidePanel(QWidget):
             self._filter_tree()
             return
         search_api = SearchAPI()
-        if kw.startswith("$"):
+        search_mode = self.search_mode_combo.currentText()
+        if search_mode == SearchMode.KEYWORD:
             kw = kw[1:]
             suitable_pointer_list = search_api.distance_search_kw(kw=self.search_box.text(),
                                                                 return_num=Cfg.app_config().distance_search_length,
@@ -265,94 +279,102 @@ class SidePanel(QWidget):
                 self._search_item(target_pointer=suitable_pointer_list[0])
             else:
                 self._filter_tree()
-        else:
+        elif search_mode == SearchMode.SEMANTIC:
             suitable_pointer_list = search_api.semantic_search_kw_to_pointer(kw=self.search_box.text(),
                                                                              return_num=Cfg.app_config().semantic_search_length,
                                                                              cutoff=Cfg.app_config().semantic_search_cutoff)
             self._filter_tree(pointer_list=suitable_pointer_list)
+        else:
+            return
 
     def _on_item_clicked(self, item, column):
         pass  
 
     def _apply_style(self):
-        self.setStyleSheet("""
-            SidePanel {
-                background: #252526;
-            }
-            QWidget#titleBar {
-                background: #252526;
-                border-bottom: 1px solid #3C3C3C;
-            }
-            QLabel#titleLabel {
-                color: #BBBBBB;
-                font-size: 11px;
-                font-weight: bold;
-                letter-spacing: 1px;
-            }
-            QPushButton#iconBtn {
-                background: transparent;
-                color: #BBBBBB;
-                border: none;
-                font-size: 16px;
-                border-radius: 3px;
-            }
-            QPushButton#iconBtn:hover {
-                background: #3A3A3A;
-            }
-            QWidget#searchFrame {
-                background: #252526;
-            }
-            QLineEdit#searchBox {
-                background: #3C3C3C;
-                color: #D4D4D4;
-                border: 1px solid #3C3C3C;
-                border-radius: 4px;
-                padding: 4px 8px;
-                font-size: 12px;
-            }
-            QLineEdit#searchBox:focus {
-                border: 1px solid #007ACC;
-            }
-            QWidget#filterFrame {
-                background: #252526;
-            }
-            QPushButton#filterBtn {
-                background: #3C3C3C;
-                color: #9D9D9D;
-                border: none;
-                border-radius: 3px;
-                padding: 2px 8px;
-                font-size: 11px;
-            }
-            QPushButton#filterBtn:hover {
-                background: #4A4A4A;
-                color: #D4D4D4;
-            }
-            QPushButton#filterBtn:checked {
-                background: #007ACC;
-                color: #FFFFFF;
-            }
-            QTreeWidget#SearchTree {
-                color: #CCCCCC;
-                border: none;
-                font-size: 12px;
-                outline: none;
-            }
-            QTreeWidget#SearchTree::item {
-                padding: 3px 0;
-            }
-            QTreeWidget#SearchTree::item:hover {
-                background: #2A2D2E;
-            }
-            QTreeWidget#SearchTree::item:selected {
-                background: #094771;
-            }
-            QScrollBar:vertical {
-                background: #252526;
-                width: 8px;
-            }
-            QScrollBar::handle:vertical {
-                background: #424242;
-                border-radius: 4px;
-            }
-        """)
+        style_sheet_file = Path(GBVar.DATA_DIR).resolve().parent / "config/style_sheet/sidepanel_style_sheet.txt"
+        if style_sheet_file.exists():
+            with open(style_sheet_file, "r", encoding="utf-8") as f:
+                style_sheet = f.read()
+        else:
+            style_sheet = """
+                SidePanel {
+                    background: #252526;
+                }
+                QWidget#titleBar {
+                    background: #252526;
+                    border-bottom: 1px solid #3C3C3C;
+                }
+                QLabel#titleLabel {
+                    color: #BBBBBB;
+                    font-size: 11px;
+                    font-weight: bold;
+                    letter-spacing: 1px;
+                }
+                QPushButton#iconBtn {
+                    background: transparent;
+                    color: #BBBBBB;
+                    border: none;
+                    font-size: 16px;
+                    border-radius: 3px;
+                }
+                QPushButton#iconBtn:hover {
+                    background: #3A3A3A;
+                }
+                QWidget#searchFrame {
+                    background: #252526;
+                }
+                QLineEdit#searchBox {
+                    background: #3C3C3C;
+                    color: #D4D4D4;
+                    border: 1px solid #3C3C3C;
+                    border-radius: 4px;
+                    padding: 4px 8px;
+                    font-size: 12px;
+                }
+                QLineEdit#searchBox:focus {
+                    border: 1px solid #007ACC;
+                }
+                QWidget#filterFrame {
+                    background: #252526;
+                }
+                QPushButton#filterBtn {
+                    background: #3C3C3C;
+                    color: #9D9D9D;
+                    border: none;
+                    border-radius: 3px;
+                    padding: 2px 8px;
+                    font-size: 11px;
+                }
+                QPushButton#filterBtn:hover {
+                    background: #4A4A4A;
+                    color: #D4D4D4;
+                }
+                QPushButton#filterBtn:checked {
+                    background: #007ACC;
+                    color: #FFFFFF;
+                }
+                QTreeWidget#SearchTree {
+                    color: #CCCCCC;
+                    border: none;
+                    font-size: 12px;
+                    outline: none;
+                }
+                QTreeWidget#SearchTree::item {
+                    padding: 3px 0;
+                }
+                QTreeWidget#SearchTree::item:hover {
+                    background: #2A2D2E;
+                }
+                QTreeWidget#SearchTree::item:selected {
+                    background: #094771;
+                }
+                QScrollBar:vertical {
+                    background: #252526;
+                    width: 8px;
+                }
+                QScrollBar::handle:vertical {
+                    background: #424242;
+                    border-radius: 4px;
+                }
+            """
+        self.setStyleSheet(style_sheet)

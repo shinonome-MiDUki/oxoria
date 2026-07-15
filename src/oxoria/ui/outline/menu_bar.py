@@ -17,6 +17,8 @@ from oxoria.cmd.canvas_api import CanvasAPI
 from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.search_api import SearchAPI
 from oxoria.cmd.app_api import AppAPI
+from oxoria.cmd.config_api import UseConfigData as Cfg
+from oxoria.cmd.package_api import PackageAPI
 
 class MenuBar():
     def __init__(self, main_window: QMainWindow):
@@ -34,13 +36,16 @@ class MenuBar():
         resources_api = ResourcesAPI()
         search_api = SearchAPI()
         app_api = AppAPI()
+        package_api = PackageAPI()
         api_set = {
             "std": std_menu_cmd,
             "cv": std_cv_cmd,
             "canvas": canvas_api,
             "resources": resources_api,
             "search": search_api,
-            "app": app_api
+            "app": app_api,
+            "package": package_api,
+            "cfg": Cfg
         }
         for menu_item in self.config["menu_bar"]:
             menu_item_obj = self.menu_bar.addMenu(str(menu_item))

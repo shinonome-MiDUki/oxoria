@@ -14,7 +14,6 @@ def opencv_convert(func):
                 ).reshape(
                     (q_image.height(), q_image.width(), 4)
                 )
-            
             kwargs["cv_img"] = img_rgba
             processed_img: np.ndarray = func(*args, **kwargs)
             h, w, ch = processed_img.shape

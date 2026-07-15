@@ -83,5 +83,10 @@ class AppAPI:
     
     def get_gbvar(self) -> GBVar:
         return GBVar
+    
+    def oxoprint(self,
+                 msg: str
+                 ) -> None:
+        OxoriaConsole.write_console(msg)
 
     

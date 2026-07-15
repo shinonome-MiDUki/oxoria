@@ -600,6 +600,111 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
         <div class="note-box">Calls <code>GBVar.MAIN_APP.quit()</code>. Does nothing if <code>MAIN_APP</code> is <code>None</code>.</div>
       </div>
     </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">get_command_stack</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">get_command_stack(self, output_length: int = -1) -> list[str]</div>
+        <p class="method-desc">Retrieves a slice of the global command execution history stack.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>output_length</td><td>Number of commands to return from the end of the stack. Pass <code>-1</code> (default) to return the entire stack; pass a positive integer to return only the last N commands</td></tr>
+        </table>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">list[str]</span></td><td>List of command strings; empty list if the command stack is empty or output_length is invalid</td></tr>
+        </table>
+        <div class="note-box">If <code>output_length</code> exceeds the actual stack size, the entire stack is returned. The stack is accessed via <code>GBVar.COMMAND_STACK</code>.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">mycommand</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">mycommand(self, cmd: str, shortcut_alphabet: str) -> None</div>
+        <p class="method-desc">Registers a custom shortcut by storing a command string mapped to a shortcut alphabet key.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>cmd</td><td>The command string to execute when the shortcut is triggered</td></tr>
+          <tr><td>shortcut_alphabet</td><td>A single character or key name to use as the shortcut trigger</td></tr>
+        </table>
+        <div class="note-box">Reads <code>config/app_config.json</code>, updates the <code>"mycommand"</code> section with the new shortcut mapping, and writes the updated config back to disk. Creates the <code>"mycommand"</code> dictionary if it does not exist.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">get_mycommand</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">get_mycommand(self, shortcut_alphabet: str) -> str</div>
+        <p class="method-desc">Retrieves the command string associated with a registered custom shortcut.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>shortcut_alphabet</td><td>The shortcut key to look up</td></tr>
+        </table>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">str</span></td><td>The command string for the given shortcut; empty string <code>""</code> if the shortcut does not exist or the <code>"mycommand"</code> section is not found</td></tr>
+        </table>
+        <div class="note-box">Reads from <code>config/app_config.json</code>. Returns an empty string rather than raising an error if the shortcut is not found.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">get_data_dir</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">get_data_dir(self) -> str</div>
+        <p class="method-desc">Returns the absolute path to the application data directory.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">str</span></td><td>Path to the data directory, typically containing <code>resources_lib/</code>, <code>profiles/</code>, and other application data</td></tr>
+        </table>
+        <div class="note-box">Reads from <code>GBVar.DATA_DIR</code>. This is a convenience accessor for the global data directory.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">get_app_folder_dir</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">get_app_folder_dir(self) -> str</div>
+        <p class="method-desc">Returns the absolute path to the parent directory of the data directory (the root application folder).</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">str</span></td><td>Path to the application root folder, one level above the data directory</td></tr>
+        </table>
+        <div class="note-box">Resolves the data directory, then returns its parent using <code>Path.resolve().parent</code>. Useful for locating configuration files and other app-level resources.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">get_gbvar</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">get_gbvar(self) -> GBVar</div>
+        <p class="method-desc">Returns a reference to the global <code>GBVar</code> class object.</p>
+        <table>
+          <tr><th>Returns</th><th></th></tr>
+          <tr><td><span class="return-type">GBVar</span></td><td>The <code>GBVar</code> class itself, providing access to all global application variables</td></tr>
+        </table>
+        <div class="note-box">This is a convenience accessor for obtaining the global variables class. Use this to access module-level config like <code>MAIN_APP</code>, <code>COMMAND_STACK</code>, <code>DATA_DIR</code>, etc.</div>
+      </div>
+    </div>
   </section>
 
   <!-- resources_api -->
@@ -975,7 +1080,7 @@ const data=[
   {file:'std_cv_cmd',label:'std_cv_cmd.py',methods:['to_blackwhite','recover_color','denoise_img','custom_operation']},
   {file:'std_menu_cmd',label:'std_menu_cmd.py',methods:['__init__','save_as','save_file','open_resource','new_canvas','open_oxoria_file','export_canvas','new_window','quit_app','force_quit_app','test']},
   {file:'canvas_api',label:'canvas_api.py',methods:['make_oxoria_file','save_oxoria_file','open_oxoria_file','open_resource_on_canvas','clear_canvas','wrap_canvas','delete_item','get_selected','group_selected','is_anything_selected','set_to_origin','set_pixmap']},
-  {file:'app_api',label:'app_api.py',methods:['run_capture_monitor','open_new_window','quit_app']},
+  {file:'app_api',label:'app_api.py',methods:['run_capture_monitor','open_new_window','quit_app','get_command_stack','mycommand','get_mycommand','get_data_dir','get_app_folder_dir','get_gbvar']},
   {file:'resources_api',label:'resources_api.py',methods:['__init__','clone_resource_to_repo','check_exists','get_resources_profile','make_resource_profile','write_resource_profile','import_resource','pointer_to_path','path_to_pointer','name_to_path','filter_pointer_with_tag','filter_pointer_with_category','filter_pointer_with_memo','edit_memo','edit_tags']},
   {file:'search_api',label:'search_api.py',methods:['__init__','append_search_base','semantic_search_kw','semantic_search_kw_to_pointer','distance_search_kw']}
 ];
