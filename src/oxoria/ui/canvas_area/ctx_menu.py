@@ -28,6 +28,10 @@ class CanvasCtxMenu(MainCanvas):
         delete_action.triggered.connect(lambda: self.delete_images())
         resettrans_action = menu.addAction('Reset Transform')
         resettrans_action.triggered.connect(lambda: self.reset_transform())
+        move_layer_up_action = menu.addAction('Move one layer above')
+        move_layer_up_action.triggered.connect(lambda: self.move_layer(unit=1))
+        move_layer_down_action = menu.addAction('Move one layer below')
+        move_layer_down_action.triggered.connect(lambda: self.move_layer(unit=-1))
         grouping_action = menu.addAction('Group items')
         grouping_action.triggered.connect(lambda: self.group_items())
         memo_action = menu.addAction('Add memo')
@@ -70,6 +74,12 @@ class CanvasCtxMenu(MainCanvas):
 
     def group_items(self):
         CanvasAPI().group_selected()
+
+    def move_layer(self, unit: int):
+        selected_item = CanvasAPI().get_selected()
+        for item in selected_item:
+            current_z = item.zValue()
+            item.setZValue(current_z + unit)
 
     def add_memo_paper(self):
         cursor_pos = QCursor.pos()
