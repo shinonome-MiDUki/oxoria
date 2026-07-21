@@ -56,9 +56,9 @@ class MenuBar():
                     menu_item_obj.addSeparator()
                     continue
                 action = QAction(action_name, self.main_window)
-                if action_config.get("shortcut", None) is not None:
-                    action.setShortcut(action_config.get("shortcut"))
                 if action_config.get("action", None) is not None:
                     cmd = str(action_config.get("action"))
                     action.triggered.connect(partial(exec, cmd, api_set))
+                    if action_config.get("shortcut", None) is not None:
+                        action.setShortcut(action_config.get("shortcut"))
                 menu_item_obj.addAction(action)
