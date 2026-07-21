@@ -9,7 +9,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QIntValidator, QDoubleValidator
 
-from oxoria.cmd.config_api import AppConfigAPI, EditorConfigAPI
+from oxoria.cmd.config_api import UseConfigData as Cfg
+from oxoria.cmd.config_api import AppConfigAPI, EditorConfigAPI, ConfigType
 
 class SettingsDialog(QDialog):
     def __init__(self):
@@ -20,21 +21,25 @@ class SettingsDialog(QDialog):
         self.setModal(True)
         layout = QVBoxLayout()
         self.tabs = QTabWidget()
-        self.tabs.addTab(self.draw_settings_tab(ConfigType=AppConfigAPI), "App Settings")
-        self.tabs.addTab(self.draw_settings_tab(ConfigType=EditorConfigAPI), "Editor Settings")
+        self.tabs.addTab(self.draw_settings_tab(sector=ConfigType.APP), "App Settings")
+        self.tabs.addTab(self.draw_settings_tab(sector=ConfigType.EDITOR), "Editor Settings")
         layout.addWidget(self.tabs)
         self.setLayout(layout)
 
 
     def draw_settings_tab(self,
-                          ConfigType: AppConfigAPI | EditorConfigAPI
+                          sector: ConfigType
                           ) -> QWidget:
         page = QWidget(self)
         sub_lo = QGridLayout()
         row_count = 0
-        for field in fields(ConfigType):
+        if sector == ConfigType.APP:
+            Config = Cfg.app_config()
+        elif sector == ConfigType.EDITOR:
+            Config = Cfg.editor_config()
+        for field in fields(Config):
             attr_name = field.name
-            attr_value = getattr(ConfigType, field.name)
+            attr_value = getattr(Config, field.name)
             value_type = type(attr_value).__name__
             attr_label = QLabel(attr_name)
             match value_type:
@@ -46,11 +51,11 @@ class SettingsDialog(QDialog):
                     confirm_widget = QPushButton("Set")
                     confirm_widget.clicked.connect(
                         lambda checked=False,
-                        ConfigType=ConfigType,
+                        sector=sector,
                         attr_name=attr_name,
                         widget=setting_widget
                         : self.set_config(
-                            ConfigType=ConfigType,
+                            sector=sector,
                             attr_name=attr_name,
                             new_value=int(widget.text())
                         )
@@ -63,11 +68,11 @@ class SettingsDialog(QDialog):
                     confirm_widget = QPushButton("Set")
                     confirm_widget.clicked.connect(
                         lambda checked=False,
-                        ConfigType=ConfigType,
+                        sector=sector,
                         attr_name=attr_name,
                         widget=setting_widget
                         : self.set_config(
-                            ConfigType=ConfigType,
+                            sector=sector,
                             attr_name=attr_name,
                             new_value=float(widget.text())
                         )
@@ -78,11 +83,11 @@ class SettingsDialog(QDialog):
                     confirm_widget = QPushButton("Set")
                     confirm_widget.clicked.connect(
                         lambda checked=False,
-                        ConfigType=ConfigType,
+                        sector=sector,
                         attr_name=attr_name,
                         widget=setting_widget
                         : self.set_config(
-                            ConfigType=ConfigType,
+                            sector=sector,
                             attr_name=attr_name,
                             new_value=str(widget.text())
                         )
@@ -93,11 +98,11 @@ class SettingsDialog(QDialog):
                     confirm_widget = QPushButton("Set")
                     confirm_widget.clicked.connect(
                         lambda checked=False,
-                        ConfigType=ConfigType,
+                        sector=sector,
                         attr_name=attr_name,
                         widget=setting_widget
                         : self.set_config(
-                            ConfigType=ConfigType,
+                            sector=sector,
                             attr_name=attr_name,
                             new_value=widget.isChecked()
                         )
@@ -108,11 +113,11 @@ class SettingsDialog(QDialog):
                     confirm_widget = QPushButton("Set")
                     confirm_widget.clicked.connect(
                         lambda checked=False,
-                        ConfigType=ConfigType,
+                        sector=sector,
                         attr_name=attr_name,
                         widget=setting_widget
                         : self.set_config(
-                            ConfigType=ConfigType,
+                            sector=sector,
                             attr_name=attr_name,
                             new_value=widget.text()
                         )
@@ -128,12 +133,13 @@ class SettingsDialog(QDialog):
         return page
 
     def set_config(self,
-                   ConfigType: AppConfigAPI | EditorConfigAPI,
+                   sector: ConfigType,
                    attr_name: str,
                    new_value: Any
                    ):
-        ConfigType.set_config(
-            attr=attr_name,
+        Cfg.set_config(
+            sector=sector,
+            attr_name=attr_name,
             new_value=new_value
         )
 

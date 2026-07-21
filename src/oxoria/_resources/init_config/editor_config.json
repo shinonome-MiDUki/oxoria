@@ -40,6 +40,9 @@
             "Add to resources": {},
             "Export resources": {}
         },
+        "Plugins": {
+            "Install Plugin": {}
+        },
         "Help": {
             "Documentation": {},
             "Python API": {},

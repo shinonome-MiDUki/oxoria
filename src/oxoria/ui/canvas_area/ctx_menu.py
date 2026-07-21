@@ -22,7 +22,6 @@ class CanvasCtxMenu(MainCanvas):
         self.customContextMenuRequested.connect(self.menu_ctx)
 
     def menu_ctx(self, pos):
-
         menu = QMenu()
         delete_action = menu.addAction("Delete")
         delete_action.triggered.connect(lambda: self.delete_images())

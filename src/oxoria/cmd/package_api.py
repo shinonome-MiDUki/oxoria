@@ -3,7 +3,10 @@ import sys
 import shutil
 from pathlib import Path
 
+from PySide6.QtWidgets import QFileDialog
+
 from oxoria.global_var import GBVar
+from oxoria.ui.ui_var import UI_Var
 from oxoria.ui.ux_widgets.console_output import OxoriaConsole
 
 class PackageAPI:
@@ -48,3 +51,13 @@ class PackageAPI:
         else:
             shutil.move(src=plugin_folder, dst=dst_folder)
         OxoriaConsole.write_console(f"Plugin {plugin_name} installed")
+
+    def install_from_browser(self) -> None:
+        plugin_folder = QFileDialog.getExistingDirectory(UI_Var.MAIN_CANVAS, "Plugin Folder")
+        if not plugin_folder:
+            return
+        plugin_name = Path(plugin_folder).name
+        self.install_plugin(
+            plugin_folder=plugin_folder,
+            plugin_name=plugin_name
+        )

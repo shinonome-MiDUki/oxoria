@@ -1,10 +1,14 @@
 import dataclasses
 import json 
+from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
 from oxoria.global_var import GBVar
 
+class ConfigType(StrEnum):
+    APP = "app"
+    EDITOR = "editor"
 
 @dataclasses.dataclass
 class AppConfigAPI:
@@ -98,26 +102,26 @@ class UseConfigData:
     _app_config_instance = None
 
     @classmethod
-    def app_config(cls):
+    def app_config(cls) -> AppConfigAPI:
         if cls._app_config_instance is None:
             cls._app_config_instance = AppConfigAPI.init_config()
         return cls._app_config_instance
 
     @classmethod
-    def editor_config(cls):
+    def editor_config(cls) -> EditorConfigAPI:
         if cls._editor_config_instance is None:
             cls._editor_config_instance = EditorConfigAPI.init_config()
         return cls._editor_config_instance
     
     @classmethod
     def set_config(cls,
-                   sector: str,
+                   sector: ConfigType,
                    attr_name: str,
                    new_value: Any
                    ) -> None:
-        if sector == "editor":
+        if sector == ConfigType.EDITOR:
             ConfigAPI = EditorConfigAPI
-        elif sector == "app":
+        elif sector == ConfigType.APP:
             ConfigAPI = AppConfigAPI
         else:
             return None
