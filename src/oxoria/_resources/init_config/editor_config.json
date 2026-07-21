@@ -41,6 +41,9 @@
             "Export resources": {}
         },
         "Plugins": {
+            "Separator1": {
+                "separator": 1
+            },
             "Install Plugin": {}
         },
         "Help": {

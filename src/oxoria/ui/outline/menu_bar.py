@@ -52,8 +52,10 @@ class MenuBar():
             if not isinstance(self.config["menu_bar"][menu_item], dict):
                 continue
             for action_name, action_config in self.config["menu_bar"][menu_item].items():
+                if action_config.get("separator", None) is not None:
+                    menu_item_obj.addSeparator()
+                    continue
                 action = QAction(action_name, self.main_window)
-                if action_config.get("")
                 if action_config.get("shortcut", None) is not None:
                     action.setShortcut(action_config.get("shortcut"))
                 if action_config.get("action", None) is not None:
