@@ -10,9 +10,7 @@ from oxoria.ui.ui_var import UI_Var
 class IoAPI:
     
     @staticmethod
-    def save_oxoria_file(self, 
-                        saving_path: str
-                        ) -> None:
+    def save_oxoria_file(saving_path: str) -> None:
         main_canvas = UI_Var.MAIN_CANVAS
         file = QFile(saving_path)
         if not file.open(QIODevice.WriteOnly):
@@ -35,20 +33,20 @@ class IoAPI:
             stream.writeDouble(item.zValue())
             
             pixmap = item.pixmap()
-            image = pixmap.toImage()
-            byte_array = QByteArray()
+            image = pixmap.toImage()   
+            byte_array = QByteArray()      
             buffer = QBuffer(byte_array)
             buffer.open(QIODevice.WriteOnly)
             image.save(buffer, "PNG")
-
-            stream.writeByteArray(byte_array)
+            data_bytes = byte_array.data()
+            stream.writeUInt32(len(data_bytes))    
+            stream.writeBytes(data_bytes) 
             
         file.close()
 
     @staticmethod
-    def open_oxoria_file(self, 
-                        opening_path: str | Path
-                        ) -> None:
+    def open_oxoria_file(opening_path: str | Path) -> None:
+        print("********")
         main_canvas = UI_Var.MAIN_CANVAS
         file = QFile(opening_path)
         if not file.open(QIODevice.ReadOnly):
@@ -60,10 +58,12 @@ class IoAPI:
         if magic != 0x4F584F52:
             raise ValueError("Invalid file format (Header error)")
         version = stream.readUInt32()
+        print(f"version : {version}")
 
         CanvasAPI().clear_canvas()
         
         count = stream.readInt32()
+        print(f"count : {count}")
         for _ in range(count):
             item_type = stream.readQString()
             
@@ -73,10 +73,12 @@ class IoAPI:
                 scale = stream.readDouble()
                 rotation = stream.readDouble()
                 z_value = stream.readDouble()
-                byte_array = stream.readByteArray()
-                image = QImage.fromData(byte_array)
+
+                byte_len = stream.readUInt32()       
+                raw_data = stream.readBytes(byte_len)
+                image = QImage.fromData(raw_data)
                 pixmap = QPixmap.fromImage(image)
-                
+
                 item = QGraphicsPixmapItem(pixmap)
                 item.setPos(x, y)
                 item.setScale(scale)
@@ -84,5 +86,7 @@ class IoAPI:
                 item.setZValue(z_value)
                 
                 main_canvas.scene().addItem(item)
+        print("*@@@@@@@*")
+
                 
         file.close()

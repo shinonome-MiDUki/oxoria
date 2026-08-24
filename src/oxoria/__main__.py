@@ -37,7 +37,7 @@ def main():
     splash.showMessage("Loading transformers", Qt.AlignBottom | Qt.AlignCenter, Qt.white)
     
     search_api = SearchAPI()
-    setproctitle.setproctitle("Oxoria 1.0")
+    setproctitle.setproctitle("Oxoria 2026")
     if check_first_run():
         win = InitUI()
     else:
