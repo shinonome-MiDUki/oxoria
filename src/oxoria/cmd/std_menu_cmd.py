@@ -10,6 +10,8 @@ from oxoria.global_var import GBVar
 from oxoria.cmd.canvas_api import CanvasAPI
 from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.app_api import AppAPI
+from oxoria.cmd.io_api import IoAPI
+
 
 class StdMenuCmd:
     def __init__(self):
@@ -27,7 +29,7 @@ class StdMenuCmd:
             filter="Oxoria Canvas (*.oxoria)")
         if saving_file:
             saving_file = str(Path(saving_file).with_suffix(".oxoria"))
-            self.canvas_api.save_oxoria_file(saving_path=saving_file)
+            IoAPI.save_oxoria_file(saving_path=saving_file)
             GBVar.OPENED_FILE = saving_file
 
     def save_file(self) -> None:
@@ -35,7 +37,7 @@ class StdMenuCmd:
         if opened_file is None:
             self.save_as()
         else:
-            self.canvas_api.save_oxoria_file(saving_path=opened_file)
+            IoAPI.save_oxoria_file(saving_path=opened_file)
 
     def open_resource(self) -> None:
         main_window = UI_Var.MAIN_WINDOW
@@ -63,7 +65,7 @@ class StdMenuCmd:
             filter="Oxoria Canvas (*.oxoria)")
         if oxoria_file_path is None:
             return
-        self.canvas_api.open_oxoria_file(opening_path=oxoria_file_path)
+        IoAPI.open_oxoria_file(opening_path=oxoria_file_path)
 
     def export_canvas(self) -> None:
         main_window = UI_Var.MAIN_WINDOW

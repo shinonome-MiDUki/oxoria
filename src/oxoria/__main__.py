@@ -6,7 +6,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from PySide6.QtWidgets import QApplication, QSplashScreen
 from PySide6.QtCore import QSettings, Qt
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QIcon
 import setproctitle
 
 from oxoria.ui.main_ui import MainWindow
@@ -27,6 +27,9 @@ def main():
     load_dotenv()
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+    app.setApplicationDisplayName("OXORIA 2026")
+    app.setApplicationName("OXORIA_2026")
+    app.setWindowIcon(QIcon(str(Path(__file__).resolve().parent / "_resources/assets/icon.png")))
 
     splash_img_path = Path(__file__).resolve().parent / "_resources/assets/initial_image.jpg"
     splash = QSplashScreen(QPixmap(str(splash_img_path)))
