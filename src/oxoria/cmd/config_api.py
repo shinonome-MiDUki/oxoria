@@ -22,7 +22,7 @@ class AppConfigAPI:
     @classmethod
     def init_config(cls):
         data_dir = GBVar.DATA_DIR
-        app_config_file = Path(data_dir).resolve().parent / "config/app_config.json"
+        app_config_file = Path(data_dir).resolve() / "config/app_config.json"
         with open(app_config_file, "r", encoding="utf-8") as f:
             app_config = json.load(f)
         app_config = app_config.get("app")
@@ -35,7 +35,7 @@ class AppConfigAPI:
                    ) -> None:
         setattr(cls, attr, new_value)
         data_dir = GBVar.DATA_DIR
-        app_config_file = Path(data_dir).resolve().parent / "config/app_config.json"
+        app_config_file = Path(data_dir).resolve() / "config/app_config.json"
         with open(app_config_file, "r", encoding="utf-8") as f:
             app_config = json.load(f)
         app_config["app"][attr] = new_value
@@ -77,7 +77,7 @@ class EditorConfigAPI:
     @classmethod
     def init_config(cls) :
         data_dir = GBVar.DATA_DIR
-        editor_config_file = Path(data_dir).resolve().parent / "config/editor_config.json"
+        editor_config_file = Path(data_dir).resolve() / "config/editor_config.json"
         with open(editor_config_file, "r", encoding="utf-8") as f:
             editor_config = json.load(f)
         editor_config = editor_config.get("editor")
@@ -90,7 +90,7 @@ class EditorConfigAPI:
                    ) -> None:
         setattr(cls, attr, new_value)
         data_dir = GBVar.DATA_DIR
-        editor_config_file = Path(data_dir).resolve().parent / "config/editor_config.json"
+        editor_config_file = Path(data_dir).resolve() / "config/editor_config.json"
         with open(editor_config_file, "r", encoding="utf-8") as f:
             editor_config = json.load(f)
         editor_config["editor"][attr] = new_value

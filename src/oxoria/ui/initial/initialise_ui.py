@@ -128,15 +128,15 @@ class InitUI(QMainWindow):
         for folder in self.folders_to_make:
             sub_folder = Path(self.central_repo_dir) / folder
             sub_folder.mkdir(parents=True, exist_ok=True)
-        with open(self.current_dir / "_resources/init_config/editor_config.json", mode="r", encoding="utf-8") as f:
+        with open(self.current_dir / "_resources" / "init_config" / "editor_config.json", mode="r", encoding="utf-8") as f:
             sample_editor_config = json.load(f)
-        with open(Path(self.central_repo_dir).resolve().parent / "config/editor_config.json", mode="w", encoding="utf-8") as f:
+        with open(Path(self.central_repo_dir).resolve() / "config" / "editor_config.json", mode="w", encoding="utf-8") as f:
             json.dump(sample_editor_config, f, ensure_ascii=False, indent=4)
-        with open(self.current_dir / "_resources/init_config/app_config.json", mode="r", encoding="utf-8") as f:
+        with open(self.current_dir / "_resources" / "init_config" / "app_config.json", mode="r", encoding="utf-8") as f:
             sample_app_config = json.load(f)
-        with open(Path(self.central_repo_dir).resolve().parent / "config/app_config.json", mode="w", encoding="utf-8") as f:
+        with open(Path(self.central_repo_dir).resolve() / "config" /"app_config.json", mode="w", encoding="utf-8") as f:
             json.dump(sample_app_config, f, ensure_ascii=False, indent=4)
-        with open(Path(self.central_repo_dir) / "resources_lib/resources_profile.json", mode="w", encoding="utf-8") as f:
+        with open(Path(self.central_repo_dir) / "resources_lib" / "resources_profile.json", mode="w", encoding="utf-8") as f:
             json.dump({}, f, ensure_ascii=False, indent=4)
         settings = QSettings("App", "oxoria")
         settings.setValue("central_repo_dir", self.central_repo_dir)
@@ -167,8 +167,10 @@ class InitUI(QMainWindow):
     def launch_main_window(self):
         self.make_dirs()
         self.open_capture_monitor()
-        use_vector = UseVector()
-        #use_vector.drop_model_and_tokenizer()
+        model_dir = Path(GBVar.DATA_DIR).resolve() / "model"
+        model_config_path = model_dir / "config.json"
+        if not model_dir.exists() or not model_config_path.exists():
+            UseVector().drop_model_and_tokenizer()
 
         from oxoria.ui.main_ui import MainWindow
         self.main_window = MainWindow()

@@ -35,7 +35,7 @@ class OxoriaConsole(QDialog):
         self.setLayout(console_layout)
 
     def load_console(self):
-        log_file_path = Path(GBVar.DATA_DIR).resolve().parent / "app_log.txt"
+        log_file_path = Path(GBVar.DATA_DIR).resolve() / "app_log.txt"
         if log_file_path.exists():
             with open(log_file_path, "r", encoding="utf-8") as f:
                 console_log = f.readlines()
@@ -45,7 +45,7 @@ class OxoriaConsole(QDialog):
         self.console_display.setText(console_log_text)
 
     def clear_console(self):
-        log_file_path = Path(GBVar.DATA_DIR).resolve().parent / "app_log.txt"
+        log_file_path = Path(GBVar.DATA_DIR).resolve() / "app_log.txt"
         os.unlink(log_file_path)
         self.console_display.setText("")
 
@@ -53,6 +53,6 @@ class OxoriaConsole(QDialog):
 
     @staticmethod
     def write_console(console_text: str) -> None:
-        log_file_path = Path(GBVar.DATA_DIR).resolve().parent / "app_log.txt"
+        log_file_path = Path(GBVar.DATA_DIR).resolve() / "app_log.txt"
         with open(log_file_path, "a", encoding="utf-8") as f:
             f.write(f"{console_text}\n")

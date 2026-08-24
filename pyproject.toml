@@ -7,7 +7,7 @@ packages = ["src/oxoria"]
 
 [project]
 name = "oxoria"
-version = "2026.1.3"
+version = "2026.1.7"
 dependencies = [
     "PySide6",
     "faiss-cpu",

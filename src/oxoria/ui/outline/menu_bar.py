@@ -24,7 +24,7 @@ class MenuBar():
     def __init__(self, main_window: QMainWindow):
         self.main_window = main_window
         self.menu_bar = self.main_window.menuBar()
-        with open(Path(GBVar.DATA_DIR).resolve().parent / "config/editor_config.json", "r", encoding="utf-8") as f:
+        with open(Path(GBVar.DATA_DIR).resolve() / "config/editor_config.json", "r", encoding="utf-8") as f:
             self.config = json.load(f)
         
     def build_menu(self):

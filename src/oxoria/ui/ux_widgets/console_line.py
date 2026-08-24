@@ -154,7 +154,7 @@ class ConsoleLine(QWidget):
             ide_executable = Cfg.app_config().ide_executable_path
             if not ide_executable: 
                 return
-            script_dir = Path(GBVar.DATA_DIR).resolve().parent / "script"
+            script_dir = Path(GBVar.DATA_DIR).resolve() / "script"
             if not script_dir.exists():
                 script_dir.mkdir(parents=True, exist_ok=True)
             script_name = input_cmd.split("-")[-1].strip().strip(".py")

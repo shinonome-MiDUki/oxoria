@@ -53,7 +53,7 @@ class AppAPI:
                   shortcut_alphabet: str
                   ) -> None:
         data_dir = GBVar.DATA_DIR
-        app_config_file = Path(data_dir).resolve().parent / "config/app_config.json"
+        app_config_file = Path(data_dir).resolve() / "config/app_config.json"
         with open(app_config_file, "r", encoding="utf-8") as f:
             app_config = json.load(f)
         if "mycommand" not in app_config:
@@ -66,7 +66,7 @@ class AppAPI:
                       shortcut_alphabet: str
                       ) -> str:
         data_dir = GBVar.DATA_DIR
-        app_config_file = Path(data_dir).resolve().parent / "config/app_config.json"
+        app_config_file = Path(data_dir).resolve() / "config/app_config.json"
         with open(app_config_file, "r", encoding="utf-8") as f:
             app_config = json.load(f)
         if "mycommand" not in app_config:
@@ -78,7 +78,7 @@ class AppAPI:
         return data_dir
     
     def get_app_folder_dir(self) -> str:
-        app_folder_dir = Path(GBVar.DATA_DIR).resolve().parent
+        app_folder_dir = Path(GBVar.DATA_DIR).resolve()
         return str(app_folder_dir)
     
     def get_gbvar(self) -> GBVar:

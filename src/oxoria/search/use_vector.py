@@ -18,7 +18,7 @@ class UseVector:
     def drop_model_and_tokenizer(self) -> None:
         if hasattr(self, "onnx_session") and hasattr(self, "tokenizer"):
             return
-        model_dir = Path(self.data_dir).resolve().parent / "model"
+        model_dir = Path(self.data_dir).resolve() / "model"
         model_config_path = model_dir / "config.json"
         if model_dir.exists() and model_config_path.exists():
             return
@@ -42,7 +42,7 @@ class UseVector:
     def setup_model_and_tokenizer(self) -> None:
         if hasattr(self, "onnx_session") and hasattr(self, "tokenizer"):
             return
-        model_dir = Path(self.data_dir).resolve().parent / "model"
+        model_dir = Path(self.data_dir).resolve() / "model"
         model_config_path = model_dir / "config.json"
         if not model_dir.exists() or not model_config_path.exists():
             self.drop_model_and_tokenizer()

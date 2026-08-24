@@ -291,7 +291,7 @@ class SidePanel(QWidget):
         pass  
 
     def _apply_style(self):
-        style_sheet_file = Path(GBVar.DATA_DIR).resolve().parent / "config/style_sheet/sidepanel_style_sheet.txt"
+        style_sheet_file = Path(GBVar.DATA_DIR).resolve() / "config/style_sheet/sidepanel_style_sheet.txt"
         if style_sheet_file.exists():
             with open(style_sheet_file, "r", encoding="utf-8") as f:
                 style_sheet = f.read()

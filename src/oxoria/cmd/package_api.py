@@ -11,7 +11,7 @@ from oxoria.ui.ux_widgets.console_output import OxoriaConsole
 
 class PackageAPI:
     def __init__(self):
-        self.plugin_root = Path(GBVar.DATA_DIR).resolve().parent / "plugins"
+        self.plugin_root = Path(GBVar.DATA_DIR).resolve() / "plugins"
 
     def launch_plugin(self,
                       plugin_name: str
