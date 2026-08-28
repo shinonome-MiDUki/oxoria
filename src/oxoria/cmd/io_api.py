@@ -1,11 +1,15 @@
 from pathlib import Path
 
-from PySide6.QtCore import QFile, QDataStream, QIODevice, QBuffer, QByteArray
+from PySide6.QtCore import (
+    QFile, QDataStream, QIODevice, 
+    QBuffer, QByteArray, QPointF
+)
 from PySide6.QtGui import QPixmap, QImage
 from PySide6.QtWidgets import QGraphicsScene, QGraphicsPixmapItem
 
 from oxoria.cmd.canvas_api import CanvasAPI
 from oxoria.ui.ui_var import UI_Var
+from oxoria.ui.canvas_area.graphics_item import ImageItem
 
 class IoAPI:
     
@@ -46,7 +50,6 @@ class IoAPI:
 
     @staticmethod
     def open_oxoria_file(opening_path: str | Path) -> None:
-        print("********")
         main_canvas = UI_Var.MAIN_CANVAS
         file = QFile(opening_path)
         if not file.open(QIODevice.ReadOnly):
@@ -79,14 +82,14 @@ class IoAPI:
                 image = QImage.fromData(raw_data)
                 pixmap = QPixmap.fromImage(image)
 
-                item = QGraphicsPixmapItem(pixmap)
-                item.setPos(x, y)
+                item = ImageItem(
+                    pixmap=pixmap,
+                    pos=QPointF(x, y)
+                )
                 item.setScale(scale)
                 item.setRotation(rotation)
                 item.setZValue(z_value)
                 
                 main_canvas.scene().addItem(item)
-        print("*@@@@@@@*")
 
-                
         file.close()

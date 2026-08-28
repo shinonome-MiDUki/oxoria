@@ -38,53 +38,6 @@ class CanvasAPI:
             }
         return save_dict
 
-    def save_oxoria_file(self, 
-                         saving_path: str
-                         ) -> None:
-        save_dict = self.make_oxoria_file()
-        with open(saving_path, "w", encoding="utf-8") as f:
-            json.dump(save_dict, f, indent=2)
-        GBVar.OPENED_FILE = saving_path
-
-    def open_oxoria_file(self, 
-                         opening_path: str | Path
-                         ) -> None:
-        if not isinstance(opening_path, Path):
-            opening_path = Path(opening_path)
-        if not opening_path.exists():
-            return None
-        if opening_path.suffix != ".oxoria":
-            return None
-        try:
-            with open(opening_path, "r", encoding="utf-8") as f:
-                oxoria_file_dict = json.load(f)
-        except:
-            return None
-        main_canvas = UI_Var.MAIN_CANVAS
-        if main_canvas is None: 
-            return
-        resource_api = ResourcesAPI()
-        current_profile = resource_api.get_resources_profile()
-        for pointer in oxoria_file_dict:
-            if pointer not in current_profile:
-                continue
-            img_path = current_profile[pointer].get("path", None)
-            img_trans = oxoria_file_dict[pointer]
-            img_pm = QPixmap(img_path)
-            img_item = ImageItem(img_pm, QPointF(img_trans["pos_x"], img_trans["pos_y"]))
-            img_item.original_path = img_path
-            img_item.pointer = pointer
-            scaled_img = img_item.base_pixmap.scaled(
-                int(img_trans["size_w"]), int(img_trans["size_h"]),
-                aspectMode = Qt.KeepAspectRatio,
-                mode = Qt.TransformationMode.SmoothTransformation
-            )
-            img_item.prepareGeometryChange()
-            img_item.setPixmap(scaled_img)
-            img_item.img_w = img_item.boundingRect().width()
-            img_item.img_h = img_item.boundingRect().height()
-            main_canvas.scene().addItem(img_item)
-        GBVar.OPENED_FILE = opening_path
         
     def open_resource_on_canvas(self,
                                 img_path: str | Path

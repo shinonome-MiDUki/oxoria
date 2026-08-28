@@ -1,54 +1,49 @@
 {
     "menu_bar": {
         "File": {
-            "Import resource": {},
-            "Open file": {},
-            "Save": {},
-            "Save as": {},
-            "Export Canvas": {},
-            "Snapshot": {},
-            "Open snapshot": {}
+            "Open file": {
+                "action": "std.open_oxoria_file()"
+            },
+            "Save": {
+                "action": "std.save_file()"
+            },
+            "Save as": {
+                "action": "std.save_as()"
+            }
         },
         "Edit": {
-            "Redo": {},
-            "Undo": {},
-            "Notes": {},
-            "New canvas": {},
-            "Settings": {}
+            "New canvas": {
+                "action": "std.new_canvas()"
+            },
+            "Settings": {
+                "action": "std.open_settings()"
+            }
         },
         "Images": {
-            "Group": {},
-            "Memo": {},
-            "Permanant memo": {},
-            "Delete": {},
-            "Align": {}
+
         },
         "Canvas": {
-            "Lock": {},
-            "Grayscale": {},
-            "Snapshot": {},
-            "Switch snapshots": {}
+
         },
         "Windows": {
-            "Minimise": {},
-            "Maximise": {},
-            "Lock window": {},
-            "New Window": {}
+
         },
         "Resources": {
-            "Open browser": {},
-            "Add to resources": {},
-            "Export resources": {}
+
         },
         "Plugins": {
             "Separator1": {
                 "separator": 1
             },
-            "Install Plugin": {}
+            "Install Plugin": {
+                "action": "std.install_plugin()"
+            }
         },
         "Help": {
             "Documentation": {},
-            "Python API": {},
+            "Python API": {
+                "action": "std.open_api_ref()"
+            },
             "Contact us": {}
         }
     },

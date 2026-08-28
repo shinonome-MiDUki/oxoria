@@ -36,7 +36,7 @@ class CanvasCtxMenu(MainCanvas):
         memo_action = menu.addAction('Add memo')
         memo_action.triggered.connect(lambda: self.add_memo_paper())
         menu.addSeparator()
-        cv_submenu = menu.addMenu('Processing')
+        cv_submenu = menu.addMenu('OpenCV')
         self.cv_submenu_ctx(cv_submenu)
 
         menu.exec_(self.mapToGlobal(pos))

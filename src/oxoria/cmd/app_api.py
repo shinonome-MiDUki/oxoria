@@ -83,6 +83,22 @@ class AppAPI:
     
     def get_gbvar(self) -> GBVar:
         return GBVar
+
+    def make_menu_item(self, 
+                       new_items: dict
+                       ) -> None:
+        with open(Path(GBVar.DATA_DIR).resolve() / "config/editor_config.json", "r", encoding="utf-8") as f:
+            editor_config = json.load(f)
+        menu_config = editor_config.get("menu_bar", {})
+        for k1, v1 in new_items.items():
+            if k1 not in menu_config:
+                menu_config[k1] = {}
+            for k2, v2 in v1.items():
+                menu_config[k1][k2] = v2
+        editor_config["menu_bar"] = menu_config
+        with open(Path(GBVar.DATA_DIR).resolve() / "config/editor_config.json", "w", encoding="utf-8") as f:
+            json.dump(editor_config, f, ensure_ascii=False, indent=3)
+
     
     def oxoprint(self,
                  msg: str

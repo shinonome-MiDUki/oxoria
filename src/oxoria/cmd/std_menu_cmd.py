@@ -11,6 +11,7 @@ from oxoria.cmd.canvas_api import CanvasAPI
 from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.app_api import AppAPI
 from oxoria.cmd.io_api import IoAPI
+from oxoria.cmd.package_api import PackageAPI
 
 
 class StdMenuCmd:
@@ -96,6 +97,9 @@ class StdMenuCmd:
 
     def open_settings(self) -> None:
         self.app_api.open_settings()
+
+    def install_plugin(self) -> None:
+        PackageAPI().install_from_browser()
 
     def test(self) -> None:
         OxoriaConsole.write_console("Test command executed")
