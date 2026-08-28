@@ -13,8 +13,21 @@ from oxoria.cmd.resources_api import ResourcesAPI
 from oxoria.cmd.search_api import SearchAPI
 
 class RegisterResourcesDialog(QDialog):
-    def __init__(self):
-        super().__init__()
+    PREVIEW_MAX_W = 600
+    PREVIEW_MAX_H = 345
+    FORM_RESERVE_H = 220
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def _preview_box(self) -> tuple[int, int]:
+        screen = self.screen() or QApplication.primaryScreen()
+        available = screen.availableGeometry() if screen else None
+        if available is None:
+            return self.PREVIEW_MAX_W, self.PREVIEW_MAX_H
+        max_w = min(self.PREVIEW_MAX_W, max(280, available.width() - 80))
+        max_h = min(self.PREVIEW_MAX_H, max(80, available.height() - self.FORM_RESERVE_H))
+        return max_w, max_h
 
     def draw_dialog(self, img_path: str, img_hash: str):
         self.setWindowTitle("Register Resources")
@@ -22,11 +35,22 @@ class RegisterResourcesDialog(QDialog):
         self.img_path = img_path
         self.img_hash = img_hash
         layout = QVBoxLayout()
+        preview_w, preview_h = self._preview_box()
         self.image_preview_label = QLabel("Image Preview")
         self.image_preview_label.setAlignment(Qt.AlignCenter)
         self.image_preview_label.setStyleSheet("background-color: #ecf0f1; color: #2c3e50; font-size: 20px;")
         img = QPixmap(self.img_path)
-        self.image_preview_label.setPixmap(img.scaled(600, 345, Qt.KeepAspectRatioByExpanding))
+        if img.isNull():
+            self.image_preview_label.setFixedSize(preview_w, min(preview_h, 120))
+        else:
+            scaled = img.scaled(
+                preview_w,
+                preview_h,
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation,
+            )
+            self.image_preview_label.setPixmap(scaled)
+            self.image_preview_label.setFixedSize(preview_w, scaled.height())
         layout.addWidget(self.image_preview_label)
         
         input_fields_layout = QVBoxLayout()
@@ -41,7 +65,6 @@ class RegisterResourcesDialog(QDialog):
         self.memo_input = QLineEdit()
         self.memo_input.setPlaceholderText("Memo")
         input_fields_layout.addWidget(self.memo_input)
-        input_fields_layout.addStretch()
         layout.addLayout(input_fields_layout)
 
         button_layout = QHBoxLayout()
@@ -55,9 +78,12 @@ class RegisterResourcesDialog(QDialog):
         self.opt_out_register_button.clicked.connect(self.opt_out_register)
         button_layout.addWidget(self.opt_out_register_button)
         layout.addLayout(button_layout)
-        layout.addLayout(input_fields_layout)
 
         self.setLayout(layout)
+        screen = self.screen() or QApplication.primaryScreen()
+        if screen is not None:
+            available = screen.availableGeometry()
+            self.setMaximumSize(available.width() - 40, available.height() - 40)
 
         resources_dir = Path(QSettings("App", "oxoria").value("central_repo_dir", "")) / "resources_lib"
         with open(resources_dir / "resources_profile.json", mode="r", encoding="utf-8") as f:

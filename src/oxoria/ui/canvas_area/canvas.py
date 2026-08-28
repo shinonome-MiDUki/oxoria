@@ -153,7 +153,7 @@ class MainCanvas(QGraphicsView):
             return
         if not existance_status[1]:
             img_hash = existance_status[0]
-            resources_register_dialog = RegisterResourcesDialog()
+            resources_register_dialog = RegisterResourcesDialog(self.window())
             resources_register_dialog.draw_dialog(img_path=path, img_hash=img_hash)
             register_status = resources_register_dialog.exec()
             if register_status == QDialog.DialogCode.Rejected:
