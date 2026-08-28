@@ -103,7 +103,7 @@ code{background:var(--code-bg);color:var(--code-text);padding:1px 5px;border-rad
 
 <main id="main">
   <h1 style="font-size:24px;font-weight:700;margin-bottom:4px">Oxoria API Reference</h1>
-  <p style="color:var(--text3);font-size:13px;margin-bottom:24px">7 modules · Complete method reference</p>
+  <p style="color:var(--text3);font-size:13px;margin-bottom:24px">10 modules · Complete method reference</p>
 
   <div id="search-banner"></div>
 
@@ -114,7 +114,10 @@ code{background:var(--code-bg);color:var(--code-text);padding:1px 5px;border-rad
       <li><a href="#std_cv_cmd">std_cv_cmd.py — CvProcessAPI</a></li>
       <li><a href="#std_menu_cmd">std_menu_cmd.py — StdMenuCmd</a></li>
       <li><a href="#canvas_api">canvas_api.py — CanvasAPI</a></li>
+      <li><a href="#io_api">io_api.py — IoAPI</a></li>
+      <li><a href="#package_api">package_api.py — PackageAPI</a></li>
       <li><a href="#app_api">app_api.py — AppAPI</a></li>
+      <li><a href="#config_api">config_api.py — Config</a></li>
       <li><a href="#resources_api">resources_api.py — ResourcesAPI</a></li>
       <li><a href="#search_api">search_api.py — SearchAPI</a></li>
     </ul>
@@ -265,7 +268,7 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
       <div class="method-body">
         <div class="sig-block">save_as(self) -> None</div>
         <p class="method-desc">Opens a Save dialog and saves the current canvas to a new <code>.oxoria</code> file chosen by the user.</p>
-        <div class="note-box">Requires <code>UI_Var.MAIN_WINDOW</code> to be set. The <code>.oxoria</code> suffix is enforced regardless of the user's input. Updates <code>GBVar.OPENED_FILE</code>.</div>
+        <div class="note-box">Requires <code>UI_Var.MAIN_WINDOW</code> to be set. The <code>.oxoria</code> suffix is enforced regardless of the user's input. Delegates the actual write to <a href="#io_api"><code>IoAPI.save_oxoria_file()</code></a>. Updates <code>GBVar.OPENED_FILE</code>.</div>
       </div>
     </div>
 
@@ -312,7 +315,7 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
       <div class="method-body">
         <div class="sig-block">open_oxoria_file(self) -> None</div>
         <p class="method-desc">Opens a <code>.oxoria</code> project file selected by the user. If a file is already open, <code>new_canvas()</code> is called first.</p>
-        <div class="note-box">Requires <code>UI_Var.MAIN_WINDOW</code> to be set.</div>
+        <div class="note-box">Requires <code>UI_Var.MAIN_WINDOW</code> to be set. Delegates the actual read to <a href="#io_api"><code>IoAPI.open_oxoria_file()</code></a>.</div>
       </div>
     </div>
 
@@ -364,6 +367,42 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
 
     <div class="method">
       <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">open_api_ref</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">open_api_ref(self) -> None</div>
+        <p class="method-desc">Opens this API reference HTML file in the system's default browser.</p>
+        <div class="note-box">Resolves the path to <code>_resources/docs/api_reference.html</code> relative to the module location and opens it via <code>QDesktopServices.openUrl()</code>.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">open_settings</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">open_settings(self) -> None</div>
+        <p class="method-desc">Opens the application's Settings dialog.</p>
+        <div class="note-box">Delegates to <code>AppAPI.open_settings()</code>, which constructs a <code>SettingsDialog</code>, draws it, and shows it modally.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">install_plugin</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">install_plugin(self) -> None</div>
+        <p class="method-desc">Opens a folder picker for the user to install a plugin.</p>
+        <div class="note-box">Delegates to <code>PackageAPI().install_from_browser()</code>. See <a href="#package_api">PackageAPI</a> for details.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
         <span class="method-name">test</span>
         <span class="chevron">▼</span>
       </div>
@@ -380,7 +419,7 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
       <h2>CanvasAPI</h2>
       <div class="file-name">canvas_api.py</div>
     </div>
-    <div class="file-desc">Provides the primary interface for canvas state management, including saving/loading project files, managing items on the scene, and exporting/importing canvas archives.</div>
+    <div class="file-desc">Provides the primary interface for canvas state management: managing items on the scene, exporting/importing canvas archives, and view control. <strong>Note:</strong> low-level <code>.oxoria</code> file save/load has moved to <a href="#io_api">IoAPI</a>.</div>
 
     <div class="method">
       <div class="method-header" onclick="toggle(this)">
@@ -395,38 +434,6 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
           <tr><td><span class="return-type">dict</span></td><td>Keys are item pointers; values contain <code>size_h</code>, <code>size_w</code>, <code>pos_x</code>, <code>pos_y</code></td></tr>
         </table>
         <div class="note-box">Only <code>ImageItem</code> instances are included. Returns early if <code>UI_Var.MAIN_CANVAS</code> is <code>None</code>.</div>
-      </div>
-    </div>
-
-    <div class="method">
-      <div class="method-header" onclick="toggle(this)">
-        <span class="method-name">save_oxoria_file</span>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="method-body">
-        <div class="sig-block">save_oxoria_file(self, saving_path: str) -> None</div>
-        <p class="method-desc">Serializes and saves the current canvas to a <code>.oxoria</code> JSON file.</p>
-        <table>
-          <tr><th>Argument</th><th>Description</th></tr>
-          <tr><td>saving_path</td><td>Absolute or relative path to write the file</td></tr>
-        </table>
-        <div class="note-box">Updates <code>GBVar.OPENED_FILE</code> upon completion.</div>
-      </div>
-    </div>
-
-    <div class="method">
-      <div class="method-header" onclick="toggle(this)">
-        <span class="method-name">open_oxoria_file</span>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="method-body">
-        <div class="sig-block">open_oxoria_file(self, opening_path: str | Path) -> None</div>
-        <p class="method-desc">Loads a <code>.oxoria</code> project file and restores all image items to the canvas.</p>
-        <table>
-          <tr><th>Argument</th><th>Description</th></tr>
-          <tr><td>opening_path</td><td>Path to the <code>.oxoria</code> file</td></tr>
-        </table>
-        <div class="note-box">Silently returns if the path does not exist, is not <code>.oxoria</code>, or cannot be parsed. Only items whose pointers exist in the current resource profile are restored. Updates <code>GBVar.OPENED_FILE</code>.</div>
       </div>
     </div>
 
@@ -553,6 +560,130 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
           <tr><td>pixmap</td><td>New <code>QPixmap</code> to assign</td></tr>
           <tr><td>image_item</td><td>The target canvas item</td></tr>
         </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- io_api -->
+  <section class="file-section" id="io_api">
+    <div class="file-header">
+      <h2>IoAPI</h2>
+      <div class="file-name">io_api.py</div>
+    </div>
+    <div class="file-desc">Handles low-level binary serialization of the canvas to/from the native <code>.oxoria</code> file format using <code>QDataStream</code>. Both methods are <code>@staticmethod</code>. Previously part of <a href="#canvas_api">CanvasAPI</a>.</div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-badge cls">staticmethod</span>
+        <span class="method-name">save_oxoria_file</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">IoAPI.save_oxoria_file(saving_path: str) -> None</div>
+        <p class="method-desc">Serializes every <code>QGraphicsPixmapItem</code> on the current canvas into a binary <code>.oxoria</code> file.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>saving_path</td><td>Absolute or relative path to write the file</td></tr>
+        </table>
+        <table>
+          <tr><th>Step</th><th>Description</th></tr>
+          <tr><td>1</td><td>Writes a 4-byte magic number (<code>0x4F584F52</code>) and format version (<code>1</code>)</td></tr>
+          <tr><td>2</td><td>Writes the item count as <code>Int32</code></td></tr>
+          <tr><td>3</td><td>For each item: type tag <code>"pixmap"</code>, position, scale, rotation, and z-value as <code>Double</code></td></tr>
+          <tr><td>4</td><td>Converts the pixmap to a PNG byte buffer and writes its length + raw bytes</td></tr>
+        </table>
+        <div class="warn-box"><strong>⚠️</strong> Raises <code>IOError</code> if the target path cannot be opened for writing.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-badge cls">staticmethod</span>
+        <span class="method-name">open_oxoria_file</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">IoAPI.open_oxoria_file(opening_path: str | Path) -> None</div>
+        <p class="method-desc">Reads a binary <code>.oxoria</code> file and rebuilds every pixmap item onto the current canvas.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>opening_path</td><td>Path to the <code>.oxoria</code> file</td></tr>
+        </table>
+        <table>
+          <tr><th>Step</th><th>Description</th></tr>
+          <tr><td>1</td><td>Validates the magic number; raises <code>ValueError</code> if it doesn't match <code>0x4F584F52</code></td></tr>
+          <tr><td>2</td><td>Calls <code>CanvasAPI().clear_canvas()</code> to wipe the current scene</td></tr>
+          <tr><td>3</td><td>Reads the item count, then reconstructs each <code>ImageItem</code> from its stored position, scale, rotation, z-value, and embedded PNG bytes</td></tr>
+          <tr><td>4</td><td>Adds each reconstructed item to <code>main_canvas.scene()</code></td></tr>
+        </table>
+        <div class="warn-box"><strong>⚠️</strong> Raises <code>IOError</code> if the file can't be opened for reading, and <code>ValueError</code> on an invalid/corrupt header. Unlike the old <code>CanvasAPI</code>-based loader, this always clears the canvas first via <code>CanvasAPI().clear_canvas()</code>, regardless of the current resource profile.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- package_api -->
+  <section class="file-section" id="package_api">
+    <div class="file-header">
+      <h2>PackageAPI</h2>
+      <div class="file-name">package_api.py</div>
+    </div>
+    <div class="file-desc">Manages third-party plugins: installing them into the app's plugin directory and dynamically loading/executing their entry point.</div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">__init__</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">__init__(self)</div>
+        <p class="method-desc">Resolves the plugin root directory to <code>&lt;GBVar.DATA_DIR&gt;/plugins</code>.</p>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">launch_plugin</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">launch_plugin(self, plugin_name: str) -> None</div>
+        <p class="method-desc">Dynamically imports and executes a plugin's <code>__oxoplugin__.py</code> entry point from the plugin directory.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>plugin_name</td><td>Folder name of the plugin under <code>plugins/</code></td></tr>
+        </table>
+        <div class="note-box">Uses <code>importlib.util.spec_from_file_location</code> to load <code>__oxoplugin__.py</code> and registers it in <code>sys.modules</code>. Writes an error to the console (via <code>OxoriaConsole</code>) instead of raising if the plugin folder or entry point is missing.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">install_plugin</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">install_plugin(self, plugin_folder: str, plugin_name: str, make_copy: bool = True, force: bool = False) -> None</div>
+        <p class="method-desc">Copies or moves a plugin folder into the app's plugin directory.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>plugin_folder</td><td>Source folder containing the plugin</td></tr>
+          <tr><td>plugin_name</td><td>Destination folder name under <code>plugins/</code></td></tr>
+          <tr><td>make_copy</td><td>If <code>True</code>, copies the folder (<code>shutil.copytree</code>); if <code>False</code>, moves it (<code>shutil.move</code>) (default: <code>True</code>)</td></tr>
+          <tr><td>force</td><td>If <code>True</code>, overwrites an existing plugin folder with the same name (default: <code>False</code>)</td></tr>
+        </table>
+        <div class="note-box">Writes an error to the console if the source folder doesn't exist, or if the destination already exists and <code>force</code> is <code>False</code>.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">install_from_browser</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">install_from_browser(self) -> None</div>
+        <p class="method-desc">Opens a folder picker dialog so the user can select a plugin folder to install, then delegates to <code>install_plugin()</code>.</p>
+        <div class="note-box">The plugin's destination name is taken from the selected folder's basename. Uses default <code>make_copy=True</code>, <code>force=False</code>. Does nothing if the dialog is cancelled.</div>
       </div>
     </div>
   </section>
@@ -703,6 +834,165 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
           <tr><td><span class="return-type">GBVar</span></td><td>The <code>GBVar</code> class itself, providing access to all global application variables</td></tr>
         </table>
         <div class="note-box">This is a convenience accessor for obtaining the global variables class. Use this to access module-level config like <code>MAIN_APP</code>, <code>COMMAND_STACK</code>, <code>DATA_DIR</code>, etc.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">make_menu_item</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">make_menu_item(self, new_items: dict) -> None</div>
+        <p class="method-desc">Registers new entries into the application's menu bar configuration, merging them into <code>editor_config.json</code>.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>new_items</td><td>Nested dict of the form <code>{menu_key: {item_key: item_value, ...}, ...}</code> to merge into the existing <code>"menu_bar"</code> section</td></tr>
+        </table>
+        <div class="note-box">Reads <code>config/editor_config.json</code>, merges <code>new_items</code> two levels deep into the existing <code>"menu_bar"</code> dict (creating menu keys that don't already exist), and writes the file back. Existing item keys under a matching menu key are overwritten.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">oxoprint</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">oxoprint(self, msg: str) -> None</div>
+        <p class="method-desc">Writes a message to the in-app Oxoria console.</p>
+        <table>
+          <tr><th>Argument</th><th>Description</th></tr>
+          <tr><td>msg</td><td>Text to display in the console</td></tr>
+        </table>
+        <div class="note-box">Thin wrapper around <code>OxoriaConsole.write_console()</code>. Useful for plugins and custom commands to surface output to the user.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- config_api -->
+  <section class="file-section" id="config_api">
+    <div class="file-header">
+      <h2>Config (AppConfigAPI / EditorConfigAPI / UseConfigData)</h2>
+      <div class="file-name">config_api.py</div>
+    </div>
+    <div class="file-desc">Defines the app's two configuration dataclasses (<code>AppConfigAPI</code>, <code>EditorConfigAPI</code>) backed by JSON files under <code>config/</code>, plus <code>UseConfigData</code>, a cached accessor layer, and the <code>ConfigType</code> enum used to select which config to target.</div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-badge cls">enum</span>
+        <span class="method-name">ConfigType</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">class ConfigType(StrEnum):
+    APP = "app"
+    EDITOR = "editor"</div>
+        <p class="method-desc">String enum identifying which configuration sector to read/write.</p>
+        <table>
+          <tr><th>Member</th><th>Value</th><th>Description</th></tr>
+          <tr><td>APP</td><td><code>"app"</code></td><td>Targets <code>AppConfigAPI</code> / <code>app_config.json</code></td></tr>
+          <tr><td>EDITOR</td><td><code>"editor"</code></td><td>Targets <code>EditorConfigAPI</code> / <code>editor_config.json</code></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-badge cls">dataclass</span>
+        <span class="method-name">AppConfigAPI</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">@dataclasses.dataclass
+class AppConfigAPI:
+    ...</div>
+        <p class="method-desc">Dataclass holding application-level settings, persisted to <code>config/app_config.json</code> under the <code>"app"</code> key.</p>
+        <table>
+          <tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          <tr><td>semantic_search_length</td><td>int</td><td><code>2</code></td><td>Default number of results for semantic search</td></tr>
+          <tr><td>semantic_search_cutoff</td><td>float</td><td><code>0.65</code></td><td>Default similarity cutoff for semantic search</td></tr>
+          <tr><td>distance_search_length</td><td>int</td><td><code>1</code></td><td>Default number of results for fuzzy/distance search</td></tr>
+          <tr><td>distance_search_cutoff</td><td>float</td><td><code>0.5</code></td><td>Default similarity cutoff for fuzzy/distance search</td></tr>
+          <tr><td>command_stack_length</td><td>int</td><td><code>15</code></td><td>Maximum size of the command history stack</td></tr>
+          <tr><td>ide_executable_path</td><td>str</td><td><code>""</code></td><td>Path to an external IDE executable, if configured</td></tr>
+        </table>
+        <table>
+          <tr><th>Method</th><th>Description</th></tr>
+          <tr><td><code>init_config()</code> <span class="return-type">classmethod</span></td><td>Loads <code>config/app_config.json</code>, extracts the <code>"app"</code> key, and returns a new <code>AppConfigAPI</code> instance built from it</td></tr>
+          <tr><td><code>set_config(attr, new_value)</code> <span class="return-type">classmethod</span></td><td>Sets <code>attr</code> on the class, then updates and rewrites the <code>"app"</code> section of <code>app_config.json</code> with the new value</td></tr>
+        </table>
+        <div class="note-box">These field defaults mirror the semantic/distance search defaults used in <code>SearchAPI</code>; note that <code>SearchAPI</code>'s methods do not currently read from this config automatically — the values must be passed in explicitly.</div>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-badge cls">dataclass</span>
+        <span class="method-name">EditorConfigAPI</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">@dataclasses.dataclass
+class EditorConfigAPI:
+    ...</div>
+        <p class="method-desc">Dataclass holding canvas/editor appearance and behavior settings, persisted to <code>config/editor_config.json</code> under the <code>"editor"</code> key.</p>
+        <table>
+          <tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          <tr><td>handle_size</td><td>int</td><td><code>40</code></td><td>Size of item resize/rotate handles</td></tr>
+          <tr><td>handle_color</td><td>str</td><td><code>"#4A90D9"</code></td><td>Fill color of item handles</td></tr>
+          <tr><td>handle_outline_thickness</td><td>float</td><td><code>1.5</code></td><td>Outline stroke width of item handles</td></tr>
+          <tr><td>handle_outline_color</td><td>str</td><td><code>"#FFFFFF"</code></td><td>Outline color of item handles</td></tr>
+          <tr><td>min_item_size</td><td>int</td><td><code>40</code></td><td>Minimum allowed size (px) for a resizable item</td></tr>
+          <tr><td>canvas_height</td><td>int</td><td><code>800</code></td><td>Default canvas height</td></tr>
+          <tr><td>sidebar_default</td><td>int</td><td><code>200</code></td><td>Default sidebar width</td></tr>
+          <tr><td>sidebar_min</td><td>int</td><td><code>200</code></td><td>Minimum sidebar width</td></tr>
+          <tr><td>sidebar_standby</td><td>int</td><td><code>300</code></td><td>Sidebar width in standby/collapsed-adjacent state</td></tr>
+          <tr><td>sidebar_max</td><td>int</td><td><code>700</code></td><td>Maximum sidebar width</td></tr>
+          <tr><td>is_draw_ruled_lines</td><td>bool</td><td><code>True</code></td><td>Whether ruled grid lines are drawn on the canvas</td></tr>
+          <tr><td>ruled_line_interval</td><td>int</td><td><code>100</code></td><td>Spacing (px) between ruled lines</td></tr>
+          <tr><td>ruled_line_thin_thickness</td><td>float</td><td><code>1.0</code></td><td>Stroke width of minor ruled lines</td></tr>
+          <tr><td>ruled_line_thick_thickness</td><td>float</td><td><code>1.5</code></td><td>Stroke width of major ruled lines</td></tr>
+          <tr><td>ruled_line_thich_color</td><td>str</td><td><code>"#505050"</code></td><td>Color of major ruled lines <em>(note: field name is spelled "thich", not "thick")</em></td></tr>
+          <tr><td>ruled_line_thin_color</td><td>str</td><td><code>"#3C3C3C"</code></td><td>Color of minor ruled lines</td></tr>
+          <tr><td>scaling_step</td><td>float</td><td><code>0.1</code></td><td>Increment used when scaling items via keyboard/shortcut</td></tr>
+          <tr><td>canvas_bg_color</td><td>str</td><td><code>"#1E1E1E"</code></td><td>Canvas background color</td></tr>
+          <tr><td>image_item_frame_color</td><td>str</td><td><code>"#4A90D9"</code></td><td>Border color drawn around selected image items</td></tr>
+          <tr><td>image_item_frame_thickness</td><td>float</td><td><code>4.0</code></td><td>Border stroke width around selected image items</td></tr>
+          <tr><td>memo_paper_color</td><td>str</td><td><code>"#FFFDF0"</code></td><td>Background color of memo notes</td></tr>
+          <tr><td>memo_text_color</td><td>str</td><td><code>"#333333"</code></td><td>Text color of memo notes</td></tr>
+          <tr><td>memo_text_font_size</td><td>int</td><td><code>180</code></td><td>Font size of memo note text</td></tr>
+          <tr><td>memo_text_font</td><td>str</td><td><code>"Yu Gothic"</code></td><td>Font family of memo note text</td></tr>
+          <tr><td>memo_text_margin</td><td>int</td><td><code>20</code></td><td>Inner padding of memo notes</td></tr>
+          <tr><td>command_line_text_color</td><td>str</td><td><code>"#FFFFFF"</code></td><td>Text color of the command line widget</td></tr>
+          <tr><td>command_line_bg_color</td><td>str</td><td><code>"#303030"</code></td><td>Background color of the command line widget</td></tr>
+          <tr><td>splitter_handle_width</td><td>int</td><td><code>10</code></td><td>Width of draggable splitter handles</td></tr>
+        </table>
+        <table>
+          <tr><th>Method</th><th>Description</th></tr>
+          <tr><td><code>init_config()</code> <span class="return-type">classmethod</span></td><td>Loads <code>config/editor_config.json</code>, extracts the <code>"editor"</code> key, and returns a new <code>EditorConfigAPI</code> instance built from it</td></tr>
+          <tr><td><code>set_config(attr, new_value)</code> <span class="return-type">classmethod</span></td><td>Sets <code>attr</code> on the class, then updates and rewrites the <code>"editor"</code> section of <code>editor_config.json</code> with the new value</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="method">
+      <div class="method-header" onclick="toggle(this)">
+        <span class="method-name">UseConfigData</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="method-body">
+        <div class="sig-block">UseConfigData.app_config() -> AppConfigAPI
+UseConfigData.editor_config() -> EditorConfigAPI
+UseConfigData.set_config(sector: ConfigType, attr_name: str, new_value: Any) -> None</div>
+        <p class="method-desc">Cached accessor layer sitting in front of <code>AppConfigAPI</code> / <code>EditorConfigAPI</code>, so config files are only read from disk once per session.</p>
+        <table>
+          <tr><th>Method</th><th>Description</th></tr>
+          <tr><td><code>app_config()</code> <span class="return-type">classmethod</span></td><td>Returns the cached <code>AppConfigAPI</code> instance, lazily calling <code>AppConfigAPI.init_config()</code> on first access</td></tr>
+          <tr><td><code>editor_config()</code> <span class="return-type">classmethod</span></td><td>Returns the cached <code>EditorConfigAPI</code> instance, lazily calling <code>EditorConfigAPI.init_config()</code> on first access</td></tr>
+          <tr><td><code>set_config(sector, attr_name, new_value)</code> <span class="return-type">classmethod</span></td><td>Dispatches to <code>AppConfigAPI.set_config()</code> or <code>EditorConfigAPI.set_config()</code> based on <code>sector</code> (a <code>ConfigType</code>); does nothing (returns <code>None</code>) for an unrecognized sector</td></tr>
+        </table>
+        <div class="note-box">Once <code>_app_config_instance</code> / <code>_editor_config_instance</code> is cached, subsequent calls to <code>app_config()</code> / <code>editor_config()</code> do not re-read the JSON file — only <code>set_config()</code> writes changes back to disk.</div>
       </div>
     </div>
   </section>
@@ -1013,18 +1303,19 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
         <span class="chevron">▼</span>
       </div>
       <div class="method-body">
-        <div class="sig-block">semantic_search_kw(self, kw: str, return_num: int = 3) -> list[str]</div>
+        <div class="sig-block">semantic_search_kw(self, kw: str, return_num: int = 3, cutoff: float = 0.65) -> list[str]</div>
         <p class="method-desc">Searches for the most semantically similar keywords to the query using the FAISS index.</p>
         <table>
           <tr><th>Argument</th><th>Description</th></tr>
           <tr><td>kw</td><td>Query keyword</td></tr>
           <tr><td>return_num</td><td>Maximum number of results to return (default: <code>3</code>)</td></tr>
+          <tr><td>cutoff</td><td>Minimum similarity score required for a result to be included (default: <code>0.65</code>) <em>— newly exposed as an argument; previously hardcoded</em></td></tr>
         </table>
         <table>
           <tr><th>Returns</th><th></th></tr>
-          <tr><td><span class="return-type">list[str]</span></td><td>List of matching keyword strings; may be shorter than <code>return_num</code> if the search base is small</td></tr>
+          <tr><td><span class="return-type">list[str]</span></td><td>List of matching keyword strings; may be shorter than <code>return_num</code> if the search base is small or the cutoff excludes matches</td></tr>
         </table>
-        <div class="note-box">Uses a distance cutoff of <code>0.65</code>; results below this threshold are excluded.</div>
+        <div class="note-box">Results below the given <code>cutoff</code> are excluded.</div>
       </div>
     </div>
 
@@ -1034,12 +1325,13 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
         <span class="chevron">▼</span>
       </div>
       <div class="method-body">
-        <div class="sig-block">semantic_search_kw_to_pointer(self, kw: str, return_num: int = 3) -> list[str]</div>
+        <div class="sig-block">semantic_search_kw_to_pointer(self, kw: str, return_num: int = 3, cutoff: float = 0.65) -> list[str]</div>
         <p class="method-desc">Performs semantic search and maps the results back to resource pointers.</p>
         <table>
           <tr><th>Argument</th><th>Description</th></tr>
           <tr><td>kw</td><td>Query keyword</td></tr>
           <tr><td>return_num</td><td>Number of results to return (default: <code>3</code>)</td></tr>
+          <tr><td>cutoff</td><td>Minimum similarity score passed through to <code>semantic_search_kw()</code> (default: <code>0.65</code>)</td></tr>
         </table>
         <table>
           <tr><th>Returns</th><th></th></tr>
@@ -1067,7 +1359,7 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
           <tr><th>Returns</th><th></th></tr>
           <tr><td><span class="return-type">list[str]</span></td><td>List of resource pointer strings matching the name query</td></tr>
         </table>
-        <div class="warn-box"><strong>Note:</strong> The <code>cutoff</code> parameter is accepted in the signature, but the internal <code>difflib.get_close_matches</code> call hardcodes <code>cutoff=0.5</code>, so the passed value is ignored.</div>
+        <div class="note-box"><strong>Fixed:</strong> the <code>cutoff</code> argument is now correctly forwarded to <code>difflib.get_close_matches()</code>. (Previously this was hardcoded to <code>0.5</code> internally and the passed value was ignored — that bug has been resolved.)</div>
       </div>
     </div>
   </section>
@@ -1078,9 +1370,12 @@ def my_func(*args, cv_img: np.ndarray = None) -> np.ndarray:
 const data=[
   {file:'cv_api',label:'cv_api.py',methods:['opencv_convert']},
   {file:'std_cv_cmd',label:'std_cv_cmd.py',methods:['to_blackwhite','recover_color','denoise_img','custom_operation']},
-  {file:'std_menu_cmd',label:'std_menu_cmd.py',methods:['__init__','save_as','save_file','open_resource','new_canvas','open_oxoria_file','export_canvas','new_window','quit_app','force_quit_app','test']},
-  {file:'canvas_api',label:'canvas_api.py',methods:['make_oxoria_file','save_oxoria_file','open_oxoria_file','open_resource_on_canvas','clear_canvas','wrap_canvas','delete_item','get_selected','group_selected','is_anything_selected','set_to_origin','set_pixmap']},
-  {file:'app_api',label:'app_api.py',methods:['run_capture_monitor','open_new_window','quit_app','get_command_stack','mycommand','get_mycommand','get_data_dir','get_app_folder_dir','get_gbvar']},
+  {file:'std_menu_cmd',label:'std_menu_cmd.py',methods:['__init__','save_as','save_file','open_resource','new_canvas','open_oxoria_file','export_canvas','new_window','quit_app','force_quit_app','open_api_ref','open_settings','install_plugin','test']},
+  {file:'canvas_api',label:'canvas_api.py',methods:['make_oxoria_file','open_resource_on_canvas','clear_canvas','wrap_canvas','delete_item','get_selected','group_selected','is_anything_selected','set_to_origin','set_pixmap']},
+  {file:'io_api',label:'io_api.py',methods:['save_oxoria_file','open_oxoria_file']},
+  {file:'package_api',label:'package_api.py',methods:['__init__','launch_plugin','install_plugin','install_from_browser']},
+  {file:'app_api',label:'app_api.py',methods:['run_capture_monitor','open_new_window','quit_app','get_command_stack','mycommand','get_mycommand','get_data_dir','get_app_folder_dir','get_gbvar','make_menu_item','oxoprint']},
+  {file:'config_api',label:'config_api.py',methods:['ConfigType','AppConfigAPI','EditorConfigAPI','UseConfigData']},
   {file:'resources_api',label:'resources_api.py',methods:['__init__','clone_resource_to_repo','check_exists','get_resources_profile','make_resource_profile','write_resource_profile','import_resource','pointer_to_path','path_to_pointer','name_to_path','filter_pointer_with_tag','filter_pointer_with_category','filter_pointer_with_memo','edit_memo','edit_tags']},
   {file:'search_api',label:'search_api.py',methods:['__init__','append_search_base','semantic_search_kw','semantic_search_kw_to_pointer','distance_search_kw']}
 ];
