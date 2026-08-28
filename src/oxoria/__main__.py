@@ -1,6 +1,5 @@
 import sys
-import psutil
-import subprocess
+import argparse
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -17,13 +16,12 @@ from oxoria.global_var import GBVar
 
 def check_first_run() -> bool:
     settings = QSettings("App", "oxoria")
-    #settings.setValue("first_run", "true")
     if settings.value("first_run", "true") == "true":
         settings.setValue("first_run", "false")
         return True
     return False
 
-def main():
+def run_program():
     load_dotenv()
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
@@ -49,6 +47,31 @@ def main():
     GBVar.MAIN_APP = app  
     splash.finish(win)  
     sys.exit(app.exec())
+
+def main():
+    parser = argparse.ArgumentParser(description="Oxoria 2026")
+    parser.add_argument("-r", "--reset", action="store_true", help="reset oxoria")
+    parser.add_argument("-d", "--delete", action="store_true", help="delete repository")
+    args = parser.parse_args()
+
+    if args.reset:
+        settings = QSettings("App", "oxoria")
+        if settings.value("first_run", "true") == "true":
+            return
+        settings.setValue("first_run", "true")
+        if args.delete:
+            central_repo_dir = settings.value("central_repo_dir", "")
+            if not central_repo_dir:
+                print("central_repo_dir not set")
+                return
+            print(f"Are you sure that you want to permanantly delete {central_repo_dir} ?")
+            confirmation = str(input("Yes/[No] : "))
+            if confirmation not in ["Yes", "YES"]:
+                return
+            import shutil
+            shutil.rmtree(central_repo_dir)
+        return
+    run_program()
 
 
 if __name__ == "__main__":

@@ -109,9 +109,10 @@ class InitUI(QMainWindow):
         layout = QVBoxLayout(page)
         
         layout.addStretch()
-        launch_btn = QPushButton("Launch")
-        launch_btn.clicked.connect(self.launch_main_window)
-        layout.addWidget(launch_btn)
+        self.is_model_downloaded = False
+        self.launch_btn = QPushButton("Download Model")
+        self.launch_btn.clicked.connect(self.launch_main_window)
+        layout.addWidget(self.launch_btn)
         layout.addStretch()
         
         self.stack.addWidget(page)
@@ -123,6 +124,7 @@ class InitUI(QMainWindow):
             self.central_repo.setText(dir_path)
 
     def make_dirs(self):
+        self.central_repo_dir = self.central_repo.text()
         if not Path(self.central_repo_dir).exists():
             Path(self.central_repo_dir).mkdir(parents=True, exist_ok=True)
         for folder in self.folders_to_make:
@@ -165,14 +167,17 @@ class InitUI(QMainWindow):
                 pass
 
     def launch_main_window(self):
-        self.make_dirs()
-        self.open_capture_monitor()
-        model_dir = Path(GBVar.DATA_DIR).resolve() / "model"
-        model_config_path = model_dir / "config.json"
-        if not model_dir.exists() or not model_config_path.exists():
-            UseVector().drop_model_and_tokenizer()
-
-        from oxoria.ui.main_ui import MainWindow
-        self.main_window = MainWindow()
-        self.main_window.show()
-        self.close()
+        if not self.is_model_downloaded:
+            self.make_dirs()
+            self.open_capture_monitor()
+            model_dir = Path(GBVar.DATA_DIR).resolve() / "model"
+            model_config_path = model_dir / "config.json"
+            if not model_dir.exists() or not model_config_path.exists():
+                UseVector().drop_model_and_tokenizer()
+            self.launch_btn.setText("Launch")
+            self.is_model_downloaded = True
+        else:
+            from oxoria.ui.main_ui import MainWindow
+            self.main_window = MainWindow()
+            self.main_window.show()
+            self.close()
